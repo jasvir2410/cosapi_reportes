@@ -1,0 +1,138 @@
+<style>
+/* para el boton atendidas*/
+.btn-atendidas {
+  border-radius: 3px;
+  position: relative;
+  padding: 15px 5px;
+  margin: 0 0 10px 10px;
+  min-width: 80px;
+  height: 60px;
+  text-align: center;
+  color: #666;
+  border: 1px solid #00a65a;
+  background-color: #00a65a;
+  font-size: 12px;
+}
+
+.btn-atendidas > .fa,
+.btn-atendidas > .glyphicon,
+.btn-atendidas > .ion {
+  font-size: 20px;
+  display: block;
+  color: #ffffff;
+}
+.btn-atendidas:hover {
+  background: #00c76d;
+  color: #444;
+  border-color: #00c76d;
+}
+.btn-atendidas:active,
+.btn-atendidas:focus {
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  -moz-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-atendidas > .badge {
+  position: absolute;
+  top: -3px;
+  right: -10px;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+/* para el boton tranferidas*/
+.btn-transferidas {
+  border-radius: 3px;
+  position: relative;
+  padding: 15px 5px;
+  margin: 0 0 10px 10px;
+  min-width: 80px;
+  height: 60px;
+  text-align: center;
+  color: #666;
+  border: 1px solid #f39c12;
+  background-color: #f39c12;
+  font-size: 12px;
+}
+
+.btn-transferidas> .fa,
+.btn-transferidas> .glyphicon,
+.btn-transferidas> .ion {
+  font-size: 20px;
+  display: block;
+  color: #ffffff;
+}
+.btn-transferidas:hover {
+  background: #f5ae3d;
+  color: #444;
+  border-color: #f5ae3d;
+}
+.btn-transferidas:active,
+.btn-transferidas:focus {
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  -moz-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-transferidas> .badge {
+  position: absolute;
+  top: -3px;
+  right: -10px;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+/* para el boton abandonadas*/
+.btn-abandonadas {
+  border-radius: 3px;
+  position: relative;
+  padding: 15px 5px;
+  margin: 0 0 10px 10px;
+  min-width: 80px;
+  height: 60px;
+  text-align: center;
+  color: #666;
+  border: 1px solid #dd4b39;
+  background-color: #dd4b39;
+  font-size: 12px;
+}
+
+.btn-abandonadas> .fa,
+.btn-abandonadas> .glyphicon,
+.btn-abandonadas> .ion {
+  font-size: 20px;
+  display: block;
+  color: #ffffff;
+}
+.btn-abandonadas:hover {
+  background: #e16151;
+  color: #444;
+  border-color: #e16151;
+}
+.btn-abandonadas:active,
+.btn-abandonadas:focus {
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  -moz-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-abandonadas> .badge {
+  position: absolute;
+  top: -3px;
+  right: -10px;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+
+
+/*fin de los botones*/
+.a-1 {
+    color: #ffffff;
+}
+.a-1:hover,
+.a-1:active,
+.a-1:focus {
+  outline: none;
+  text-decoration: none;
+  color: #ffffff;
+}
+</style>
