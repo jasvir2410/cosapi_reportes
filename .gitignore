@@ -3,15 +3,11 @@
 # =========================
 
 # Archivos de Laravel
-/bootstrap/compiled.php
 .env
 .env.php
 /vendor
-/storage
-/bootstrap/compiled.php
-/bootstrap/cache/compiled.php
-node_modules/
-bootstrap/cache/
+/public
+/node_modules
 
 
 # -- Composer
