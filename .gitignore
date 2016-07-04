@@ -1,0 +1,48 @@
+# =========================
+# Listar de archivos y carpetas Ignoradas en GIT
+# =========================
+
+# Archivos de Laravel
+/bootstrap/compiled.php
+.env
+.env.php
+/vendor
+/storage
+/bootstrap/compiled.php
+/bootstrap/cache/compiled.php
+node_modules/
+bootstrap/cache/
+
+
+# -- Composer
+composer.lock
+composer.phar
+
+# phpstorm
+.idea/
+
+# sublimetext
+/*.sublime-project
+*.sublime-workspace
+
+# netbeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# -- Sistemas Operativos ------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.*
+!.gitignore
+!.htaccess
+*~
