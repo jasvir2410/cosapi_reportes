@@ -27,14 +27,32 @@
             <li class="header">MENU PRINCIPAL</li>
             <li class="active treeview">
               <a href="#">
-                <i class="fa fa-dashboard"></i> <span>REPORTES</span> <i class="fa fa-angle-left pull-right"></i>
+                <i class="fa fa-dashboard"></i> <span>ESTADO CALLS</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
-              <ul class="treeview-menu">
-               <li ><a href="#" id="listar_estado_agentes" class="reportes"><i class="fa fa-circle-o"></i> Reporte de Estados</a></li>
-               <li ><a href="#" id="listar_estado_detallados" class="reportes"><i class="fa fa-circle-o"></i> Reporte de Estados Detallado</a>
+              <ul class="treeview-menu">              
+                  <li ><a href="#" id="listar_estado_agentes" class="reportes"><i class="fa fa-circle-o"></i> Consolidado de Estados</a></li>
+                  <li ><a href="#" id="listar_estado_detallados" class="reportes"><i class="fa fa-circle-o"></i> Estados Detallado</a></li>
               </ul>
             </li>
-            <!--<li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>-->
+            <li >
+              <a href="#">
+                <i class="fa fa-phone-square"></i> <span>DETALLE CALLS</span> <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+              <li ><a tabindex="-1" href="#" id="listar_llamadas_entrantes" class="reportes"><i class="fa fa-circle-o text-green"></i> Llamadas Entrantes</a></li>
+              <li ><a tabindex="-1" href="#" id="listar_llamadas_salientes" class="reportes"><i class="fa fa-circle-o text-yellow"></i> Llamadas Salientes</a></li>
+              <li ><a tabindex="-1" href="#" id="excel" class="reportes"><i class="fa fa-circle-o text-green"></i> Pruebas Excel</a></li></ul>
+            </li>
+            <li >
+              <a href="#">
+                <i class="fa fa-book"></i> <span>CONSOLIDADO CALLS</span> <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+                <li ><a href="#" id="calls_consolidated" class="reportes"><i class="fa fa-circle-o"></i> Consolidado por Skill</a></li>
+                <li ><a href="#" id="calls_agent" class="reportes"><i class="fa fa-circle-o"></i> Consolidado por Agentes</a></li>
+                <li ><a href="#" id="calls_day" class="reportes"><i class="fa fa-circle-o"></i> Consolidado por Día</a></li>
+                <li ><a href="#" id="calls_hour" class="reportes"><i class="fa fa-circle-o"></i> Consolidado por Hora</a></li>
+            </li>
           </ul>
         </section>
         <!-- /.sidebar -->

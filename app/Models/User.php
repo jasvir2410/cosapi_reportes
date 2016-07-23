@@ -15,7 +15,9 @@
                                         CanResetPasswordContract
     {
         use Authenticatable, Authorizable, CanResetPassword;
-        protected $table = 'users';
+
+        protected $connection   = 'laravel';
+        protected $table        = 'users';
 
         /**
          * The attributes that are mass assignable.

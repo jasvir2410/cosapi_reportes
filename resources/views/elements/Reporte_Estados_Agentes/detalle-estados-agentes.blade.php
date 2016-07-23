@@ -20,7 +20,7 @@
     }
 </style>
 <div>
-<input name="buscar_agente" id="buscar_agente"aria-controls="example" placeholder="Buscar Agente" class="form-control" type="search">
+<input name="buscar_agente" id="buscar_agente" aria-controls="example" placeholder="Buscar Agente" class="form-control" type="search">
 </div>
 <div class="box box-primary table-responsive">
     <p></p>

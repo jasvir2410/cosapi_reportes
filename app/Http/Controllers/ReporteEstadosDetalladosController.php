@@ -15,16 +15,22 @@ use Cosapi\Http\Controllers\Controller;
 
 class ReporteEstadosDetalladosController extends Controller
 {
+    
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * [index Función principal para cargar la vista por defecto del Modulo de ListarLlamadasAbandonadas]
+     * @return [Array] [retorna datos para la vista]
      */
     public function index()
     {
         return view('elements/Reporte_Estados_Detallados/index');
     }
 
+/**
+ * [listar_estado_detallados Función para traer la lista de estados de llamdas]
+ * @param  Request $request        [Dato para identifcar GET O POST]
+ * @param  [String]  $fecha_evento [Recibe el rango de fecha a buscar]
+ * @return [Array]                 [Retorna la lista del detalle de eventos]
+ */
     public function listar_estado_detallados (Request $request, $fecha_evento){
 
     	list($fecha_inicial,$fecha_final)=explode(' - ', $fecha_evento);
@@ -40,12 +46,13 @@ class ReporteEstadosDetalladosController extends Controller
                                     ->get()->toArray();
 
 
-
     	return View('elements/Reporte_Estados_Detallados/detalle-estados-detallados')->with(array(
             'detalleEventos'    =>  $DetalleEventos
             )
         ) ;
     }
+
+
 
     
 }

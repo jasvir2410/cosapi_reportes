@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reporte extends Model
 {
-      protected $table = 'agentes';
-	  //protected $fillable = ['name', 'description'];
-	  protected $guarded = ['id','name'];
+	protected $connection   = 'laravel';
+	protected $table  	 	= 'agentes';
+	protected $guarded 		= ['id','name'];
 }
 
 

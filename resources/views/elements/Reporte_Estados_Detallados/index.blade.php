@@ -26,17 +26,7 @@
 
 	</div>
 	<div id="resumen">
-		<!--
-		<div id='contenido_agente'>
-	        <div class="loading" id="loading">
-	            <li></li>
-	            <li></li>
-	            <li></li>
-	            <li></li>
-	            <li></li>
-	        </div>
-	    </div>
-		-->
+
 	</div>
 </div>
 	

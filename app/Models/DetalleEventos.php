@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class DetalleEventos extends Model
 {
-    protected $table = 'detalle_eventos';
+    protected $connection   = 'laravel';
+    protected $table 		= 'detalle_eventos';
 
 
     public function evento(){

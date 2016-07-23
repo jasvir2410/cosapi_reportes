@@ -4,43 +4,69 @@
  * Alan Cornejo
  */
 
-$(document).ready(function(){
-
-    /* script para daterange y agregarle formato año-mes-dia */
-    $('input[name="fecha_evento"]').daterangepicker(
-        {
-            locale: {
-                format: 'YYYY-MM-DD'
-            }
-        }
-    );
-});
 
 
-function buscar(){
+
+
     
-    var fecha_evento    = document.getElementById('texto').value;
-    var nombre_url      = document.getElementById('url').value; 
+    function buscar(){
 
-    url = nombre_url+"/rango_fechas/"+fecha_evento;
-    console.log(url);
-    cargar_ajaxDIV('GET', url, 'resumen', 'Problemas para actualizar Reporte de Estados');
-}
+         	$('#reporte-estados1').DataTable().fnDestroy();
+
+            var fecha_evento    = $('#texto').val();
+            var nombre_url      = $('#url').val(); 
+
+            url_consolidado = "listar_llamadas_consolidadas/rango_fechas/"+fecha_evento;          
 
 
-function cargar_ajaxDIV(type,url,nameDiv,msjError){
 
-    $.ajax({
-        type        : type,
-        url         : url,
-        cache       : false,
-        dataType    : 'HTML',
+            $('#reporte-estados1').DataTable({
+                "deferRender"       : true,
+                "responsive"        : true,
 
-        success: function(data){
-            $('#'+nameDiv).html(data);
-        },
-        error: function(data){
-            $('#'+nameDiv).html(msjError);
-        }
-    });
-}
+                "processing"        : true,
+                "serverSide"        : true,
+                "ajax"              : url_consolidado,
+
+                "scrollY"           : "300px",
+                "scrollX"           : true,
+                "scrollCollapse"    : true,
+
+                "select"            : true,
+
+                "dom"               : 'Bfrtip',
+                "buttons"           : ['copyHtml5', 'excelHtml5'],
+
+                
+                "columns"           : [
+                    {"data":"name"},
+                    {"data":"recibidas"},
+                    {"data":"atendidas"},
+                    {"data":"abandonados"},
+                    {"data":"transferencias"},
+                    {"data":"constestadas"},
+                    {"data":"constestadas_10"},
+                    {"data":"constestadas_15"},
+                    {"data":"constestadas_20"},
+                    {"data":"abandonadas_10"},
+                    {"data":"abandonadas_15"},
+                    {"data":"abandonadas_20"},
+                    {"data":"ro10"},
+                    {"data":"ro15"},
+                    {"data":"ro20"},
+                    {"data":"min_espera"},
+                    {"data":"duracion"},
+                    {"data":"avgw"},
+                    {"data":"avgt"},
+                    {"data":"answ"},
+                    {"data":"unansw"},                  
+                ]
+
+
+            });
+        };
+
+
+
+
+

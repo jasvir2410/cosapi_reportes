@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link href="{{ asset('images/cosapi.ico') }}"  rel="shortcut icon">
-    <title>AdminLTE 2 | @yield('title')</title>
+    <title>Reportes | @yield('title')</title>
     <!-- para que la web sea responsive -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.5 -->
@@ -43,7 +43,8 @@
             </h1>
             <ol class="breadcrumb">
               <li><a href="/"><i class="fa fa-dashboard"></i>Inicio</a></li>
-              <li class="active"><?php echo $d;?></li>
+              <!--<li class="active"><?php echo $d;?></li>-->
+              <li class="active" id='urlsistema'></li>
             </ol>
           </section>
 

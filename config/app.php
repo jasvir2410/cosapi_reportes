@@ -151,6 +151,11 @@ return [
         Barryvdh\Debugbar\ServiceProvider::class,
         Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
+        /** Excel **/
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+
+        /** DataTable  **/
+        Yajra\Datatables\DatatablesServiceProvider::class,
 
     ],
 
@@ -207,6 +212,12 @@ return [
         'Form'      => Collective\Html\FormFacade::class,
         'Html'      => Collective\Html\HtmlFacade::class,
         'Debugbar'  => Barryvdh\Debugbar\Facade::class,
+
+        /** Excel  **/
+        'Excel'     => Maatwebsite\Excel\Facades\Excel::class,
+
+        /** DataTable **/
+        'Datatables'=> Yajra\Datatables\Facades\Datatables::class,
 
 
     ],
