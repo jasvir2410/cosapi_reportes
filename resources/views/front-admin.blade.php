@@ -15,9 +15,13 @@
 				//comparamos si el id es igual al id que se capturo
 			
 				$.ajax({
-					type : "GET",
-					url : url+'/'+url,
-					datatype: "html", 
+					type : "POST",
+					url : url,
+					datatype: "html",
+					data:{
+						_token : $('input[name=_token]').val(),
+						url : url
+					}, 
 					success : function(data) {
 						$('#container').html (data);
 

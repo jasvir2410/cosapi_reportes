@@ -26,8 +26,8 @@
             
             
             <div class="panel-body"  id="tblAtendidas">         
-                <div class="panel-body" id="cuerpo1">
-                    <table id="reporte-estados1" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
+                <div class="panel-body" id="cuerpo0">
+                    <table id="reporte-estados0" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -46,8 +46,8 @@
             </div>
 
             <div class="panel-body"  id="tblTransfer">
-                <div class="panel-body" id="cuerpo2">
-                    <table id="reporte-estados2" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
+                <div class="panel-body" id="cuerpo1">
+                    <table id="reporte-estados1" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -65,8 +65,8 @@
             </div>
 
             <div class="panel-body"  id="tblAbandonadas">
-                <div class="panel-body" id="cuerpo3">
-                    <table id="reporte-estados3" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
+                <div class="panel-body" id="cuerpo2">
+                    <table id="reporte-estados2" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Date</th>

@@ -1,5 +1,8 @@
 <header class="main-header">
 
+    <!-- Token de sistemas -->
+    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
     <!-- Logo -->
     <a href="/" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->

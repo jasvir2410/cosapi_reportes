@@ -15,7 +15,7 @@
 		      <h3 class="box-title"><b>Consolidado de Llamadas</b></h3>
 		      </div>
 		      	
-				<input type="text" id="url" value='{{$evento}}'>
+				<input type="hidden" id="url" value='{{$evento}}'>
 
 				@include('elements.filtros.filtro-fecha')
 				
@@ -47,7 +47,70 @@
 	        }
 	    );
 
-	    
+	    $('#reporte-estados1').dataTable();
+
+	    buscar=function (){
+
+            $('#reporte-estados1').dataTable().fnDestroy();   
+            
+
+            $('#reporte-estados1').DataTable({
+                "deferRender"       : true,
+
+                "processing"        : true,
+                "serverSide"        : true,
+                "ajax"              : {
+                    url : 'calls_consolidated/consulta',
+                    type: 'POST',
+                    data:
+                    {
+                        _token : $('input[name=_token]').val(),
+                        fecha_evento : $('#texto').val(),
+                        url : $('#url').val()
+                    }
+                },
+                "language"          :{
+                     processing: "<img src='../../images/cargando.gif' width='100%' height='auto' />"
+                },
+
+                "paging"            : false,
+                "scrollY"           : "300px",
+                "scrollX"           : true,
+                "scrollCollapse"    : true,
+
+                "select"            : true,
+
+                "responsive"        : true,
+                "dom"               : 'Bfrtip',
+                "buttons"           : ['copyHtml5', 'excelHtml5'],
+
+                
+                "columns"           : [
+                    {"data":"name"},
+                    {"data":"recibidas"},
+                    {"data":"atendidas"},
+                    {"data":"abandonados"},
+                    {"data":"transferencias"},
+                    {"data":"constestadas"},
+                    {"data":"constestadas_10"},
+                    {"data":"constestadas_15"},
+                    {"data":"constestadas_20"},
+                    {"data":"abandonadas_10"},
+                    {"data":"abandonadas_15"},
+                    {"data":"abandonadas_20"},
+                    {"data":"ro10"},
+                    {"data":"ro15"},
+                    {"data":"ro20"},
+                    {"data":"min_espera"},
+                    {"data":"duracion"},
+                    {"data":"avgw"},
+                    {"data":"avgt"},
+                    {"data":"answ"},
+                    {"data":"unansw"},                  
+                ]
+            });
+        };
+
          	
 	});
 </script>

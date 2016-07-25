@@ -19,21 +19,15 @@ Route::get('listar_estado_detallados'								, ['uses'=>'ReporteEstadosDetallado
 Route::get('listar_estado_detallados/rango_fechas/{fecha_evento}'	, ['uses'=>'ReporteEstadosDetalladosController@listar_estado_detallados']);
 
 // reporte de llamadas contestadas
-Route::post('listar_llamadas_entrantes'									, ['uses'=>'ListarLlamadasEntrantesController@index']);
-Route::get('listar_llamadas_contestadas/rango_fechas/{fecha_evento}'	, ['uses'=>'ListarLlamadasEntrantesController@listar_llamadas_contestadas']);
-Route::get('listar_llamadas_abandonadas/rango_fechas/{fecha_evento}'	, ['uses'=>'ListarLlamadasEntrantesController@listar_llamadas_abandonadas']);
-Route::get('listar_llamadas_transferidas/rango_fechas/{fecha_evento}'	, ['uses'=>'ListarLlamadasEntrantesController@listar_llamadas_transferidas']);
+Route::post('calls_inbound'											, ['uses'=>'ListarLlamadasEntrantesController@index']);
+Route::post('calls_inbound/consulta'								, ['uses'=>'ListarLlamadasEntrantesController@calls_inbound']);
 
 // reporte de consolidaod de llamadas
-Route::get('calls_consolidated/{evento}'					, ['uses'=>'ListarLlamadasConsolidadasController@index']);
-Route::get('calls_agent/{evento}'							, ['uses'=>'ListarLlamadasConsolidadasController@index']);
-Route::get('calls_day/{evento}'								, ['uses'=>'ListarLlamadasConsolidadasController@index']);
-Route::get('calls_hour/{evento}'							, ['uses'=>'ListarLlamadasConsolidadasController@index']);
-
-
-Route::ajax('calls_consolidated/consulta'					, ['uses'=>'ListarLlamadasConsolidadasController@calls_consolidated']);
-
-
+Route::post('calls_consolidated'									, ['uses'=>'ListarLlamadasConsolidadasController@index']);
+Route::post('calls_agent'											, ['uses'=>'ListarLlamadasConsolidadasController@index']);
+Route::post('calls_day'												, ['uses'=>'ListarLlamadasConsolidadasController@index']);
+Route::post('calls_hour'											, ['uses'=>'ListarLlamadasConsolidadasController@index']);
+Route::post('calls_consolidated/consulta'							, ['uses'=>'ListarLlamadasConsolidadasController@calls_consolidated']);
 
 
 // reporte de llamadas salienes

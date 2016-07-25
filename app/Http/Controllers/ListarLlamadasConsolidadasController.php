@@ -18,20 +18,15 @@ class ListarLlamadasConsolidadasController extends Controller
      * [index Función que muestra la ventana principal del módulo ListarLlamadasConsolidadas]
      * @return [Array] [retorna los datos para la vista]
      */
-    public function index($evento)
+    public function index(Request $request)
     {
 
-        $evento=$evento;
+        $evento=$request->url;
         return view('elements/Listar_Llamadas_Consolidadas/index')->with(array(
                 'evento'   => $evento
             ));   
     }
 
-    public function consolidadas_skills(){
-
-        dd('hola');
-
-    }
 
     /**
      * [listar_llamadas_consolidadas Función para listar el consolidado de llamadas]
@@ -39,25 +34,38 @@ class ListarLlamadasConsolidadasController extends Controller
      * @param  [string]  $fecha_evento   [Recibe el rango de fecha e buscar]
      * @return [Array]                   [Retorna la lista del consolidado de llamadas]
      */
-    public function listar_llamadas_consolidadas(Request $request){
+    public function calls_consolidated(Request $request){
 
         $objCollection                      = new Collector;
+        $groupby                            = '';
         $days                               = explode(' - ', $request->fecha_evento);      
         $calls_inbound                      = $this->calls_inbound($days);
 
+
+        //dd($request->url);
+
         // DATOS PARA ORDENAR
-        switch($request->url){
+        switch(trim((string)$request->url)){
             case 'calls_consolidated' :
-                $call_group                 = $this->calls_queue();
-                $groupby                      = 'queue';
-            case 'agent' :
-                $call_group                 = $this->calls_agents();
-            case 'hourmod' :
+                $call_group                 = $this->calls_queue($days);
+                $groupby                    = 'queue';
+                break ;
+            case 'calls_agent'        :
+                $call_group                 = $this->calls_agents($days);
+                $groupby                    = 'agent';
+                break ;
+            case 'calls_hour'         :
                 $call_group                 = $this->calls_hours($days);
-            case 'fechamod' :
+                $groupby                    = 'hourmod';
+                break ;
+            case 'calls_day'          :
                 $call_group                 = ArrayDays($days);
+                $groupby                    = 'fechamod';
+                break ;
         }
 
+
+        //dd($groupby);
         // CONSTRUYENDO LOS DATOS DE VISTA
         $ListCallsConsolidated              = ListCallsConsolidated($calls_inbound,$groupby);
         $BuilderCallsConsolidated           = BuilderCallsConsolidated($ListCallsConsolidated,$call_group,$groupby);
@@ -66,12 +74,16 @@ class ListarLlamadasConsolidadasController extends Controller
         // CAMIBANDO A FORMATO DATABALE
         $CallsConsolidated                  = Datatables::of($objCollection)
                                                         ->editColumn('name', function ($objCollection) {
-
-                                                            if($groupby == 'hourmod'){
+                                                            $posicion = strpos($objCollection['name'], 'Agent/');
+                                                            if(is_numeric($objCollection['name'])){
                                                                 return conversorSegundosHoras(((intval($objCollection['name']))*3600),false).' - '.conversorSegundosHoras(convertHourExactToSeconds($objCollection['name'],3540),false);
+                                                            }else{
+                                                                if($posicion === false){
+                                                                    return $objCollection['name'];
+                                                                }else{
+                                                                    return ExtraerAgente($objCollection['name']);
+                                                                }                                                               
                                                             }
-
-                                                            return $objCollection['name'];
                                                         })
                                                         ->make(true);
 
@@ -92,6 +104,7 @@ class ListarLlamadasConsolidadasController extends Controller
                                     ->groupBy('queue')
                                     ->get()
                                     ->toArray();
+        //dd($calls_queue);                                    
         return $calls_queue;
     }
 
