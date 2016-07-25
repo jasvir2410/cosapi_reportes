@@ -2,10 +2,6 @@
 /*use Illuminate\Http\Request;*/
 use Illuminate\Support\Facades\Request; /*con esta linea se muestra el request del ajax*/
 
-//ruta para ver logs de laravel
-Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-
-
 //ruta para acceder al panel de administrador
 Route::get('/', ['as' => 'admin', 'uses'=>'AdminController@index']);
 
