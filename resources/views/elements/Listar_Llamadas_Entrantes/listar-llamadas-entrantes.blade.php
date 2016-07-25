@@ -1,3 +1,4 @@
+<input type="hidden" name="_token" value="{!! csrf_token() !!}">
 <p></p>
 <div class="row" id="qvacio">
     <div class="col-md-12">
@@ -23,9 +24,8 @@
                 </li>
             </ul>
 
-            
-            
-            <div class="panel-body"  id="tblAtendidas">         
+
+            <div class="panel-body"  id="tblAtendidas">
                 <div class="panel-body" id="cuerpo0">
                     <table id="reporte-estados0" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
                         <thead>
@@ -37,7 +37,6 @@
                                 <th>Skill</th>
                                 <th>Duration</th>
                                 <th>Action</th>
-                                <th>Wait Time</th>
                                 <th>Wait Time</th>
                             </tr>
                         </thead>

@@ -77,39 +77,18 @@
         $('#tblAbandonadas').show();
     });
 
-
+    
     var eventos =['calls_completed','calls_transfer','calls_abandone'];
-    for(var i=0; i<eventos.length; i++){
-
-        //INCIALIZACION DE DATATABLES
-        $('#reporte-estados'+i).DataTable({});
-
-    }    
-
+    $('table display').dataTable();
 
     buscar = function (){
-        var fecha_evento    = $('#texto').val();
-        var nombre_url      = $('#url').val();
-
+        $('#reporte-estados0').dataTable().fnDestroy(); 
+        $('#reporte-estados1').dataTable().fnDestroy(); 
+        $('#reporte-estados2').dataTable().fnDestroy(); 
         //CONSTRUCCION Y CARGA DE DATOS A LAS TABLAS 
         for(var j=0; j<eventos.length; j++){
 
-            //CREACION DE CABECERAS
-            $('#cuerpo'+j+' div').remove();
-            $('#cuerpo'+j).append('<table id="reporte-estados'+j+'" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">'+
-                                    '<thead>'+
-                                        '<tr>'+
-                                            '<th>Name</th>'+
-                                            '<th>Hour</th>'+
-                                            '<th>Telephone</th>'+
-                                            '<th>Agent</th>'+
-                                            '<th>Skill</th>'+
-                                            '<th>Duration</th>'+
-                                            '<th>Action</th>'+
-                                            '<th>Wait Time</th>'+
-                                        '</tr>'+
-                                    '</thead>'+
-                                '</table>');
+            
 
             //CREACION DE DATATABLES
             $('#reporte-estados'+j).DataTable({

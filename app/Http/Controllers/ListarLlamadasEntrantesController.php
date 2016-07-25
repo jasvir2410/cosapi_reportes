@@ -30,7 +30,7 @@ class ListarLlamadasEntrantesController extends Controller
 
 
     public function calls_inbound(Request $request){
-        $days                               = explode(' - ', $request->fecha_evento);
+        $days               = explode(' - ', $request->fecha_evento);
         switch($request->evento){
             case 'calls_completed' :        
                 $calls      = $this->query_calls_completed($days);
