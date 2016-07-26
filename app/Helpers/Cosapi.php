@@ -495,6 +495,29 @@ function BuilderCallsConsolidated($callsConsolidated ,$calls_queue,$indice,$list
 
             $posicion                               =   $posicion + 1;
             
+        }else{
+            $Consolidateds[$posicion]['name']                                           =   $calls_queue[$j][$indice];
+            $Consolidateds[$posicion]['recibidas']                                      =   0 ;
+            $Consolidateds[$posicion]['atendidas']                                      =   0 ;
+            $Consolidateds[$posicion]['abandonados']                                    =   0 ;
+            $Consolidateds[$posicion]['transferencias']                                 =   0 ;
+            $Consolidateds[$posicion]['constestadas']                                   =   0 ;
+            $Consolidateds[$posicion]['constestadas_10']                                =   0 ;
+            $Consolidateds[$posicion]['constestadas_15']                                =   0 ;
+            $Consolidateds[$posicion]['constestadas_20']                                =   0 ;
+            $Consolidateds[$posicion]['abandonadas_10']                                 =   0 ;
+            $Consolidateds[$posicion]['abandonadas_15']                                 =   0 ;
+            $Consolidateds[$posicion]['abandonadas_20']                                 =   0 ;
+            $Consolidateds[$posicion]['min_espera']                                     =   conversorSegundosHoras(0,false) ;
+            $Consolidateds[$posicion]['duracion']                                       =   conversorSegundosHoras(0,false) ;
+            $Consolidateds[$posicion]['answ']                                           =   0 ;
+            $Consolidateds[$posicion]['unansw']                                         =   0 ;
+            $Consolidateds[$posicion]['avgw']                                           =   conversorSegundosHoras(0,false) ;
+            $Consolidateds[$posicion]['avgt']                                           =   conversorSegundosHoras(0,false) ;
+            $Consolidateds[$posicion]['ro10']                                           =   0 ;
+            $Consolidateds[$posicion]['ro15']                                           =   0 ;
+            $Consolidateds[$posicion]['ro20']                                           =   0 ;
+            $posicion                               =   $posicion + 1;
         }
     }
 

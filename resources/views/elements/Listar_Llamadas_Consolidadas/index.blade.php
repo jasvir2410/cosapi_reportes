@@ -69,9 +69,6 @@
                         url : $('#url').val()
                     }
                 },
-                "language"          :{
-                     processing: "<img src='../../images/cargando.gif' width='100%' height='auto' />"
-                },
 
                 "paging"            : false,
                 "scrollY"           : "300px",
@@ -80,7 +77,7 @@
 
                 "select"            : true,
 
-                "responsive"        : true,
+                "responsive"        : false,
                 "dom"               : 'Bfrtip',
                 "buttons"           : ['copyHtml5', 'excelHtml5'],
 

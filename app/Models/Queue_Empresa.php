@@ -47,8 +47,8 @@ class 	Queue_Empresa extends Model
 
     public function scopeSelect_fechamod($query)
     {
-        //return $query->Select(DB::raw('*,DATE(FROM_UNIXTIME(date)) as fechamod, HOUR(FROM_UNIXTIME(DATE)) AS hourmod ' ));
-        return $query->Select(DB::raw('*,DATE(datetime) as fechamod, TIME(datetime) AS timemod, HOUR(datetime) AS hourmod ' ));
+        //return $query->Select(DB::raw('*,DATE(datetime) as fechamod, TIME(datetime) AS timemod, HOUR(datetime) AS hourmod ' ));
+        return $query->Select(DB::raw("*,DATE(datetime) as fechamod, TIME(datetime) AS timemod,  DATE_FORMAT((DATE_SUB(DATETIME, INTERVAL ( MINUTE(DATETIME)%30 )MINUTE)), '%H:%i') AS hourmod " ));
     }
 
 }

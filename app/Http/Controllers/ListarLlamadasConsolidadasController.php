@@ -75,15 +75,15 @@ class ListarLlamadasConsolidadasController extends Controller
         $CallsConsolidated                  = Datatables::of($objCollection)
                                                         ->editColumn('name', function ($objCollection) {
                                                             $posicion = strpos($objCollection['name'], 'Agent/');
-                                                            if(is_numeric($objCollection['name'])){
+                                                            /*if(is_numeric($objCollection['name'])){
                                                                 return conversorSegundosHoras(((intval($objCollection['name']))*3600),false).' - '.conversorSegundosHoras(convertHourExactToSeconds($objCollection['name'],3540),false);
-                                                            }else{
+                                                            }else{*/
                                                                 if($posicion === false){
                                                                     return $objCollection['name'];
                                                                 }else{
                                                                     return ExtraerAgente($objCollection['name']);
                                                                 }                                                               
-                                                            }
+                                                            //}
                                                         })
                                                         ->make(true);
 
@@ -104,7 +104,7 @@ class ListarLlamadasConsolidadasController extends Controller
                                     ->groupBy('queue')
                                     ->get()
                                     ->toArray();
-        //dd($calls_queue);                                    
+                                           
         return $calls_queue;
     }
 
@@ -119,6 +119,7 @@ class ListarLlamadasConsolidadasController extends Controller
                                     ->groupBy('agent')
                                     ->get()
                                     ->toArray();
+    
         return $calls_agents;
     }
 
@@ -126,11 +127,17 @@ class ListarLlamadasConsolidadasController extends Controller
     protected function calls_hours($days)
     {
         
-        $calls_hours  = Queue_empresa::Select(DB::raw('HOUR(datetime) AS hourmod ' ))
-                                        ->filtro_days($days)
-                                        ->groupBy('hourmod')
-                                        ->get()
-                                        ->toArray();        
+        $calls_hours = [];
+        for($i = 0;$i<24;$i++){
+            if($i<=9){
+                $hora='0'.$i;
+            }else{
+                $hora=$i;
+            }
+            array_push($calls_hours, ["hourmod" => $hora.':00']);
+            array_push($calls_hours, ["hourmod" => $hora.':30']);
+        }
+       
         return $calls_hours;
     }
 
