@@ -36,6 +36,11 @@ class ReporteEstadosAgentesController extends Controller
 
         $Usuarios           = User::get()->toArray();
         $Eventos            = Eventos::Select()->where('estado_id','=','1')->get();
+
+        $Eventos_Auxiliares = Eventos::Select('id')->where('eventos_auxiliares','=','1' )->get();
+        $Cosapi_Eventos     = Eventos::Select('id')->where('cosapi_eventos','=','1' )->get();
+        $Claro_Eventos      = Eventos::Select('id')->where('claro_eventos','=','1' )->get();
+
         $DetalleEventos     = DetalleEventos::Select()
                                     ->with('evento')
                                     ->whereBetween(DB::raw("DATE(fecha_evento)"),[$fecha_inicial, $fecha_final])
