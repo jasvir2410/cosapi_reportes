@@ -33,7 +33,7 @@
 			evento       : evento
 		};
 
-		dataTables_entrantes('detail-calls', data);
+		dataTables_entrantes('detail-calls', data,'calls_incoming');
 	}
 </script>
 

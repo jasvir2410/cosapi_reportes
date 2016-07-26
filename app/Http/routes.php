@@ -26,8 +26,7 @@ Route::post('calls_consolidated/consulta'							, ['uses'=>'ListarLlamadasConsol
 
 
 // reporte de llamadas salienes
-Route::get('listar_llamadas_salientes'								, ['uses'=>'ListarLlamadasSalientesController@index']);
-Route::get('listar_llamadas_salientes/rango_fechas/{fecha_evento}'	, ['uses'=>'ListarLlamadasSalientesController@listar_llamadas_salientes']);
+Route::post('calls_outgoing'								, ['uses'=>'ListarLlamadasSalientesController@index']);
 
 // exportar A excel
 Route::get('export_contestated/rango_fechas/{fecha_evento}'	        , ['uses'=>'CallsIncomingController@export_contestated']);

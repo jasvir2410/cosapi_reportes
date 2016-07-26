@@ -40,7 +40,7 @@
               </a>
               <ul class="treeview-menu">
               <li ><a tabindex="-1" href="#" id="calls_incoming" class="reportes"><i class="fa fa-circle-o text-green"></i> Llamadas Entrantes</a></li>
-              <li ><a tabindex="-1" href="#" id="listar_llamadas_salientes" class="reportes"><i class="fa fa-circle-o text-yellow"></i> Llamadas Salientes</a></li>
+              <li ><a tabindex="-1" href="#" id="calls_outgoing" class="reportes"><i class="fa fa-circle-o text-yellow"></i> Llamadas Salientes</a></li>
               <li ><a tabindex="-1" href="#" id="excel" class="reportes"><i class="fa fa-circle-o text-green"></i> Pruebas Excel</a></li></ul>
             </li>
             <li >

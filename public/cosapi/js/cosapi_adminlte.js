@@ -15,7 +15,7 @@ $(document).ready(function() {
 } );
 
 
-function dataTables_entrantes(nombreDIV, data){
+function dataTables_entrantes(nombreDIV, data, event){
 
     $('#'+nombreDIV).dataTable().fnDestroy();
 
@@ -25,7 +25,7 @@ function dataTables_entrantes(nombreDIV, data){
         "processing"        : true,
         "serverSide"        : true,
         "ajax"              : {
-            url : 'calls_incoming',
+            url : event,
             type: 'POST',
             data: data
         },
@@ -37,16 +37,7 @@ function dataTables_entrantes(nombreDIV, data){
         "scrollX"           : true,
         "scrollCollapse"    : true,
         "select"            : true,
-        "columns"           : [
-            {"data":"fechamod"},
-            {"data":"timemod"},
-            {"data":"clid"},
-            {"data":"agent"},
-            {"data":"queue"},
-            {"data":"info2"},
-            {"data":"event"},
-            {"data":"info1"}
-        ]
+        "columns"           : columns_datatable(event)
     });
 }
 
@@ -77,5 +68,30 @@ function dataTables_lang_spanish(){
     }
 
     return lang;
+}
+
+function columns_datatable(event){
+    if(event == 'calls_incoming'){
+        var columns =   [    
+                            {"data":"fechamod"},
+                            {"data":"timemod"},
+                            {"data":"clid"},
+                            {"data":"agent"},
+                            {"data":"queue"},
+                            {"data":"info2"},
+                            {"data":"event"},
+                            {"data":"info1"}
+                        ];
+        return columns;
+    }else{
+        var columns =   [    
+                            {"data":"date"},
+                            {"data":"hour"},
+                            {"data":"src"},
+                            {"data":"dst"},
+                            {"data":"billsec"}
+                        ];
+        return columns;
+    }
 }
 

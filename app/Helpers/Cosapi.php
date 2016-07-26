@@ -231,25 +231,6 @@ function calcularTiempoEntreEstados($usuarios,$eventos,$detalleEventos){
 }
 
 
-function ListarLlamadasSalientes($calls_outgoing){
-    $posicion = 0;    
-    foreach ($calls_outgoing as $outgoing) {
-        $LlamadasSalientes[$posicion]['fecha']            =   date('d-m-Y',strtotime($outgoing['calldate']));
-        $LlamadasSalientes[$posicion]['hora']             =   date('H:i:s',strtotime($outgoing['calldate']));
-        $LlamadasSalientes[$posicion]['anexo']            =   $outgoing['src'];
-        $LlamadasSalientes[$posicion]['saliente']         =   $outgoing['dst'];        
-        $LlamadasSalientes[$posicion]['tiempo']           =   $outgoing['billsec'];
-        $posicion                                         =   $posicion+1;
-    }    
-    if(isset($LlamadasSalientes)){
-        return $LlamadasSalientes;
-    }else{
-        $LlamadasSalientes= array();
-        return $LlamadasSalientes;
-    }
-}
-
-
 /**
  * [searcharray Función que busca la posición de un valor en específico en la columna de un array]
  * @param  [string] $value  [Valor a buscar en la columna del Array]

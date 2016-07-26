@@ -1,8 +1,9 @@
+@include('layout.plugins.css-preloader')
 @include('layout.plugins.css-datepicker')
+@include('layout.plugins.css-dateTables')
 @include('layout.plugins.js-datepicker')
-
+@include('layout.plugins.js-dateTables')
 <div  class="col-md-12" id="container">
-	<div  id="filtro-fecha">
 		
 		{!! Form::open([ 'method' => '', 'name'=>'buscador']) !!}
 		<div >
@@ -21,10 +22,22 @@
 		</div>
 		{!! Form::close() !!}
 
-	</div>
-	<div id="resumen">
-
-	</div>
+	@include('elements.Listar_Llamadas_Salientes.listar-llamadas-salientes')
 </div>
 
 <script src="{{ asset('cosapi/js/cosapi_adminlte.js')}}"></script>
+
+<script type="text/javascript">
+	$(document).on('ready',function(){
+		buscar();
+	})
+
+	function buscar (){
+		var data = {
+			_token       : $('input[name=_token]').val(),
+			fecha_evento : $('#texto').val()
+		};
+
+		dataTables_entrantes('reporte-estados1', data, 'calls_outgoing');
+	}
+</script>
