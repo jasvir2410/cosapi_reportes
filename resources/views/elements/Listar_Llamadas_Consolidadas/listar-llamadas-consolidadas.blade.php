@@ -25,6 +25,12 @@
                 <th>Avg Talk</th>
                 <th>% Answ</th>
                 <th>% Unansw</th>
+                <th>Ns10%</th>
+                <th>Ns15%</th>
+                <th>Ns20%</th>
+                <th>Avh2 10%</th>
+                <th>Avh2 15%</th>
+                <th>Avh2 20%</th>
             </tr>
         </thead>
     </table>

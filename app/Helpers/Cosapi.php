@@ -493,6 +493,44 @@ function BuilderCallsConsolidated($callsConsolidated ,$calls_queue,$indice,$list
 
 
 
+            if($Consolidateds[$posicion]['recibidas']!=0){
+                $Consolidateds[$posicion]['ns10']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_10']/$Consolidateds[$posicion]['recibidas'])*100,2);
+            }else{
+                $Consolidateds[$posicion]['ns10']   = convertDecimales(0,2);
+            }
+
+            if($Consolidateds[$posicion]['recibidas']!=0){
+                $Consolidateds[$posicion]['ns15']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_15']/$Consolidateds[$posicion]['recibidas'])*100,2);
+            }else{
+                $Consolidateds[$posicion]['ns15']   = convertDecimales(0,2);
+            }
+
+            if($Consolidateds[$posicion]['recibidas']!=0){
+                $Consolidateds[$posicion]['ns20']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_20']/$Consolidateds[$posicion]['recibidas'])*100,2);
+            }else{
+                $Consolidateds[$posicion]['ns20']   = convertDecimales(0,2);
+            }
+
+
+            if($Consolidateds[$posicion]['constestadas'] !=0){
+                $Consolidateds[$posicion]['avh210']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_10']/$Consolidateds[$posicion]['constestadas'] )*100,2);
+            }else{
+                $Consolidateds[$posicion]['avh210']   = convertDecimales(0,2);
+            }
+
+            if($Consolidateds[$posicion]['constestadas'] !=0){
+                $Consolidateds[$posicion]['avh215']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_15']/$Consolidateds[$posicion]['constestadas'] )*100,2);
+            }else{
+                $Consolidateds[$posicion]['avh215']   = convertDecimales(0,2);
+            } 
+
+            if($Consolidateds[$posicion]['constestadas'] !=0){
+                $Consolidateds[$posicion]['avh220']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_20']/$Consolidateds[$posicion]['constestadas'] )*100,2);
+            }else{
+                $Consolidateds[$posicion]['avh220']   = convertDecimales(0,2);
+            } 
+
+
             $posicion                               =   $posicion + 1;
             
         }else{
@@ -517,6 +555,12 @@ function BuilderCallsConsolidated($callsConsolidated ,$calls_queue,$indice,$list
             $Consolidateds[$posicion]['ro10']                                           =   0 ;
             $Consolidateds[$posicion]['ro15']                                           =   0 ;
             $Consolidateds[$posicion]['ro20']                                           =   0 ;
+            $Consolidateds[$posicion]['ns10']                                           =   0 ;
+            $Consolidateds[$posicion]['ns15']                                           =   0 ;
+            $Consolidateds[$posicion]['ns20']                                           =   0 ;
+            $Consolidateds[$posicion]['avh210']                                           =   0 ;
+            $Consolidateds[$posicion]['avh215']                                           =   0 ;
+            $Consolidateds[$posicion]['avh220']                                           =   0 ;
             $posicion                               =   $posicion + 1;
         }
     }
@@ -660,7 +704,13 @@ function convertCollection($arrays, $collection){
                         'avgw'              => $array['avgw'],
                         'avgt'              => $array['avgt'],
                         'answ'              => $array['answ'],
-                        'unansw'            => $array['unansw'],  
+                        'unansw'            => $array['unansw'],
+                        'ns10'              => $array['ns10'],
+                        'ns15'              => $array['ns15'],
+                        'ns20'              => $array['ns20'],
+                        'avh210'            => $array['avh210'],
+                        'avh215'            => $array['avh215'],
+                        'avh220'            => $array['avh220'],  
                     ]);
     }
 

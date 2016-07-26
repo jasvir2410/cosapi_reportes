@@ -103,7 +103,13 @@
                     {"data":"avgw"},
                     {"data":"avgt"},
                     {"data":"answ"},
-                    {"data":"unansw"},                  
+                    {"data":"unansw"},
+                    {"data":"ns10"},
+                    {"data":"ns15"},
+                    {"data":"ns20"},
+                    {"data":"avh210"},
+                    {"data":"avh215"},
+                    {"data":"avh220"},                  
                 ]
             });
         };
