@@ -1,3 +1,22 @@
+.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 250px;
+    height: 80px;
+    margin-left: -125px;
+    margin-top: -15px;
+    padding: 15px 0 30px 0;
+    border: 1px solid #ddd;
+    text-align: center;
+    color: #444;
+    font-size: 14px;
+    background: url("../img/ajax-loader.gif") no-repeat center 38px #fff;
+    box-shadow: 2px 2px 5px #444;
+    -moz-box-shadow: 2px 2px 5px #444;
+    -webkit-box-shadow: 2px 2px 5px #444;
+    z-index: 9999;
+}
 /* Inicio css para iconos del menu de agente
 */
 .navbar-inverse .navbar-txt1 {

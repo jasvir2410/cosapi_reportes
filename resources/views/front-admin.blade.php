@@ -11,31 +11,26 @@
 <script>
 	$(function(){
 		$(".reportes").on("click", function(e){
-				var url = e.target.id;//para capturar el atributo id en ajax
-				//comparamos si el id es igual al id que se capturo
-			
-				$.ajax({
-					type : "POST",
-					url : url,
-					datatype: "html",
-					data:{
-						_token : $('input[name=_token]').val(),
-						url : url
-					}, 
-					success : function(data) {
-						$('#container').html (data);
+			var url = e.target.id;//para capturar el atributo id en ajax
 
-						// DEFINICION DEL EVENTO
-						
+			$.ajax({
+				type 	: "POST",
+				url 	: url,
+				data	:{
+						_token 	: $('input[name=_token]').val(),
+						url 	: url
+				},
+				success : function(data) {
+					$('#container').html (data);
 
-						// ARBOL UBICADO A LA DERECHA EN LA PARTE SUPERIOR
-						$('#urlsistema a').remove();						
-						$('#urlsistema').append('<a href="#" id="'+url+'" class="reportes">'+$('#'+url).text()+'</a>');
-					},
-					error : function(data) {
-						$("#container").html ("problemas para actualizar");
-					}
-				});
+					// ARBOL UBICADO A LA DERECHA EN LA PARTE SUPERIOR
+					$('#urlsistema a').remove();
+					$('#urlsistema').append('<a href="#" id="'+url+'" class="reportes">'+$('#'+url).text()+'</a>');
+				},
+				error : function(data) {
+					$("#container").html ("problemas para actualizar");
+				}
+			});
 		});
 	});
 </script>

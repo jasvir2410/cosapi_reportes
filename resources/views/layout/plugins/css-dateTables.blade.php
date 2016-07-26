@@ -9,6 +9,8 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('plugins/datatables/FixedColumns-3.2.2/css/fixedColumns.bootstrap.min.css')}}"/>
 <link rel="stylesheet" type="text/css" href="{{ asset('plugins/datatables/FixedHeader-3.1.2/css/fixedHeader.bootstrap.min.css')}}"/>
 
+<link rel="stylesheet" type="text/css" href="{{ asset('cosapi/css/cosapi.css')}}"/>
+
 
 <!--
 

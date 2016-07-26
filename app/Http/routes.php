@@ -15,8 +15,7 @@ Route::get('listar_estado_detallados'								, ['uses'=>'ReporteEstadosDetallado
 Route::get('listar_estado_detallados/rango_fechas/{fecha_evento}'	, ['uses'=>'ReporteEstadosDetalladosController@listar_estado_detallados']);
 
 // reporte de llamadas contestadas
-Route::post('calls_inbound'											, ['uses'=>'ListarLlamadasEntrantesController@index']);
-Route::post('calls_inbound/consulta'								, ['uses'=>'ListarLlamadasEntrantesController@calls_inbound']);
+Route::post('calls_incoming'										, ['uses'=>'CallsIncomingController@index']);
 
 // reporte de consolidaod de llamadas
 Route::post('calls_consolidated'									, ['uses'=>'ListarLlamadasConsolidadasController@index']);
@@ -31,7 +30,7 @@ Route::get('listar_llamadas_salientes'								, ['uses'=>'ListarLlamadasSaliente
 Route::get('listar_llamadas_salientes/rango_fechas/{fecha_evento}'	, ['uses'=>'ListarLlamadasSalientesController@listar_llamadas_salientes']);
 
 // exportar A excel
-Route::get('export_contestated/rango_fechas/{fecha_evento}'	, ['uses'=>'ListarLlamadasEntrantesController@export_contestated']);
+Route::get('export_contestated/rango_fechas/{fecha_evento}'	        , ['uses'=>'CallsIncomingController@export_contestated']);
 
 
 // Importar datos desde Excel

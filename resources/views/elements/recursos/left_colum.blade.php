@@ -39,7 +39,7 @@
                 <i class="fa fa-phone-square"></i> <span>DETALLE CALLS</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-              <li ><a tabindex="-1" href="#" id="calls_inbound" class="reportes"><i class="fa fa-circle-o text-green"></i> Llamadas Entrantes</a></li>
+              <li ><a tabindex="-1" href="#" id="calls_incoming" class="reportes"><i class="fa fa-circle-o text-green"></i> Llamadas Entrantes</a></li>
               <li ><a tabindex="-1" href="#" id="listar_llamadas_salientes" class="reportes"><i class="fa fa-circle-o text-yellow"></i> Llamadas Salientes</a></li>
               <li ><a tabindex="-1" href="#" id="excel" class="reportes"><i class="fa fa-circle-o text-green"></i> Pruebas Excel</a></li></ul>
             </li>
