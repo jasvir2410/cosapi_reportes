@@ -67,22 +67,40 @@
 
                         @foreach ($resumenEvento as $resumenEvent)
 
-                            @define $evento_id              = $resumenEvent['evento_id']
-                            @define $tiempoTotalLogueado    += $resumenEvent['tiempo']
+                                @define $evento_id              = $resumenEvent['evento_id']
+                                @define $tiempoTotalLogueado    += $resumenEvent['tiempo']
 
-                               <!-- Calculo para Tiempos Auxiliares-->
-                            @if ( $evento_id == 2 || $evento_id == 3  || $evento_id == 4 || $evento_id == 5 || $evento_id == 6  )
-                                @define $totalTiemposAuxiliares += $resumenEvent['tiempo']
-                            @endif
-                            <!--Calculo para totalTiemposTrabajados-->
-                            @if ( $evento_id == 7 || $evento_id == 8 || $evento_id == 9 || $evento_id == 10 )
-                                @define $totalTiemposTrabajados += $resumenEvent['tiempo']
-                            @endif
+                                <!-- Calculo para Tiempos Auxiliares-->
+                                @foreach ($eventos_auxiliares as $eventos_auxiliar)
 
-                            <!--Calculo para totalTiemposTrabajadosClaro-->
-                            @if ($evento_id == 8 || $evento_id == 9)
-                                @define $totalTiemposTrabajadosClaro += $resumenEvent['tiempo']
-                            @endif
+                                    @define $id_evento_auxiliar = $eventos_auxiliar['id'];
+
+                                    @if ( $evento_id == $id_evento_auxiliar  )
+                                        @define $totalTiemposAuxiliares += $resumenEvent['tiempo']
+                                        @endif
+                                @endforeach
+
+                                <!--Calculo para totalTiemposTrabajados para cosapi-->
+                                @foreach ($cosapi_eventos as $cosapi_evento)
+
+                                    @define $id_cosapi_evento = $cosapi_evento['id'];
+
+                                    @if ( $evento_id == $id_cosapi_evento  )
+                                            @define $totalTiemposTrabajados += $resumenEvent['tiempo']
+                                    @endif
+
+                                @endforeach
+
+                                <!--Calculo para totalTiemposTrabajados para Claro-->
+                                @foreach ($claro_eventos as $claro_evento)
+
+                                    @define $id_claro_evento = $claro_evento['id']
+
+                                    @if ($evento_id == $id_claro_evento)
+                                            @define $totalTiemposTrabajadosClaro += $resumenEvent['tiempo']
+                                    @endif
+
+                                @endforeach
 
                             <!--Calculo para tiempo ACD -->
                             @if ( $evento_id == 1 )
