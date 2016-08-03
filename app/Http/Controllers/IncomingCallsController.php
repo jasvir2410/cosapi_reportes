@@ -13,7 +13,7 @@ use Datatables;
 use Illuminate\Support\Facades\Log;
 
 
-class CallsIncomingController extends Controller
+class IncomingCallsController extends Controller
 {
 
     public function index(Request $request)
@@ -22,7 +22,7 @@ class CallsIncomingController extends Controller
             if ($request->evento){
                 return $this->calls_incoming($request->fecha_evento, $request->evento);
             }else{
-                return view('elements/calls_incoming/index');
+                return view('elements/incoming_calls/index');
             }
         }
     }
@@ -95,22 +95,19 @@ class CallsIncomingController extends Controller
         return $format_datatable;
     }
 
-
-    protected function export_contestated($days)
-    {
-        $days                = explode(' - ', $days); 
-        $export_contestated  = $this->query_calls_completed($days);
-        $export_contestated  = $this->export_excel($export_contestated);
+    public function prueba(){
+        $days                = explode(' - ', '2016-07-01 - 2016-07-01');
+        $calls_incoming      = $this->query_calls($days,'calls_completed');
+        $export_contestated  = $this->export_excel($calls_incoming);
         return $export_contestated;
     }
-
 
     protected function export_excel($array){
         Excel::create('Filename', function($excel) use($array) {           
             $excel->sheet('prueba', function($sheet) use($array) {               
                 $sheet->fromArray($array);
             });
-        })->export('xls');
+        })->export('csv');
         return $array;
     }
 

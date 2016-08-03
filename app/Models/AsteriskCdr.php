@@ -5,7 +5,7 @@ namespace Cosapi\Models;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 
-class Cdr extends Model
+class AsteriskCDR extends Model
 {
     protected $connection   = 'cdr_asterisk';
     protected $table        = 'cdr';

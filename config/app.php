@@ -146,6 +146,14 @@ return [
         Cosapi\Providers\EventServiceProvider::class,
         Cosapi\Providers\RouteServiceProvider::class,
 
+        /**
+         * Vendor Service Provider Propios Cosapi
+         */
+        Cosapi\Providers\PHPAmiServiceProvider::class,
+        Cosapi\Providers\BootstrapServiceProvider::class,
+        Cosapi\Providers\JQueryServiceProvider::class,
+        Cosapi\Providers\IoniconsServiceProvider::class,
+        Cosapi\Providers\FortAwesomeServiceProvider::class,
 
         Collective\Html\HtmlServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,

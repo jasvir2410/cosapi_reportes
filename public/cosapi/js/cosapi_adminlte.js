@@ -15,21 +15,25 @@ $(document).ready(function() {
 } );
 
 
-function dataTables_entrantes(nombreDIV, data, event){
+function dataTables_entrantes(nombreDIV, data, route){
 
     $('#'+nombreDIV).dataTable().fnDestroy();
 
     $('#'+nombreDIV).DataTable({
         "deferRender"       : true,
-        "responsive"        : true,
+        "responsive"        : false,
         "processing"        : true,
         "serverSide"        : true,
         "ajax"              : {
-            url : event,
-            type: 'POST',
-            data: data
+            url     : route,
+            type    : 'POST',
+            data    : data
         },
-        "language"          : dataTables_lang_spanish(),
+        dom                 : 'Bfrtip',
+        buttons             : [
+            'copyHtml5', 'csvHtml5', 'excelHtml5'
+        ],
+
         "paging"            : true,
         "pageLength"        : 100,
         "lengthMenu"        : [100, 200, 300, 400, 500],
@@ -37,7 +41,8 @@ function dataTables_entrantes(nombreDIV, data, event){
         "scrollX"           : true,
         "scrollCollapse"    : true,
         "select"            : true,
-        "columns"           : columns_datatable(event)
+        "language"          : dataTables_lang_spanish(),
+        "columns"           : columns_datatable(route)
     });
 }
 
@@ -70,28 +75,109 @@ function dataTables_lang_spanish(){
     return lang;
 }
 
-function columns_datatable(event){
-    if(event == 'calls_incoming'){
-        var columns =   [    
-                            {"data":"fechamod"},
-                            {"data":"timemod"},
-                            {"data":"clid"},
-                            {"data":"agent"},
-                            {"data":"queue"},
-                            {"data":"info2"},
-                            {"data":"event"},
-                            {"data":"info1"}
-                        ];
-        return columns;
-    }else{
-        var columns =   [    
-                            {"data":"date"},
-                            {"data":"hour"},
-                            {"data":"src"},
-                            {"data":"dst"},
-                            {"data":"billsec"}
-                        ];
-        return columns;
+function columns_datatable(route){
+    if(route == 'incoming_calls'){
+        var columns =   [
+            {"data" : "fechamod"},
+            {"data" : "timemod"},
+            {"data" : "clid"},
+            {"data" : "agent"},
+            {"data" : "queue"},
+            {"data" : "info2"},
+            {"data" : "event"},
+            {"data" : "info1"}
+        ];
     }
+
+    if(route == 'calls_outgoing'){
+        var columns =   [
+            {"data" : "date"},
+            {"data" : "hour"},
+            {"data" : "src"},
+            {"data" : "dst"},
+            {"data" : "billsec"}
+        ];
+    }
+
+    if(route == 'consolidated_calls'){
+        var columns =   [
+            {"data":"name"},
+            {"data":"recibidas"},
+            {"data":"atendidas"},
+            {"data":"abandonados"},
+            {"data":"transferencias"},
+            {"data":"constestadas"},
+            {"data":"constestadas_10"},
+            {"data":"constestadas_15"},
+            {"data":"constestadas_20"},
+            {"data":"abandonadas_10"},
+            {"data":"abandonadas_15"},
+            {"data":"abandonadas_20"},
+            {"data":"min_espera"},
+            {"data":"duracion"},
+            {"data":"avgw"},
+            {"data":"avgt"},
+            {"data":"answ"},
+            {"data":"unansw"},
+            {"data":"ro10"},
+            {"data":"ro15"},
+            {"data":"ro20"},
+            {"data":"ns10"},
+            {"data":"ns15"},
+            {"data":"ns20"},
+            {"data":"avh210"},
+            {"data":"avh215"},
+            {"data":"avh220"}
+        ];
+    }
+
+    if(route == 'events_detail'){
+        var columns =   [
+            {"data" : "nombre_agente"},
+            {"data" : "fecha"},
+            {"data" : "hora"},
+            {"data" : "evento"},
+            {"data" : "accion"}
+        ];
+    }
+
+    if(route == 'outgoing_calls'){
+        var columns =   [
+            {"data" : "date"},
+            {"data" : "hour"},
+            {"data" : "src"},
+            {"data" : "dst"},
+            {"data" : "duration"}
+        ];
+    }
+
+
+    return columns;
+}
+
+function show_tab_incoming (evento){
+    dataTables_entrantes('table-incoming', get_data_filters(evento), 'incoming_calls');
+}
+
+function show_tab_consolidated (evento){
+    dataTables_entrantes('table-consolidated', get_data_filters(evento), 'consolidated_calls');
+}
+
+function show_tab_detail_events (evento){
+    dataTables_entrantes('table-detail-events', get_data_filters(evento), 'events_detail');
+}
+
+function show_tab_outgoing (evento){
+    dataTables_entrantes('table-outgoing', get_data_filters(evento), 'outgoing_calls');
+}
+
+function get_data_filters(evento){
+    var data = {
+        _token       : $('input[name=_token]').val(),
+        fecha_evento : $('input[name=fecha_evento]').val(),
+        evento       : evento
+    };
+
+    return data;
 }
 

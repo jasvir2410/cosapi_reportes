@@ -1,5 +1,3 @@
-@include('layout.plugins.css-dateTables')
-
 <style>
     .td-b3{
         text-align: center;
@@ -19,9 +17,7 @@
         line-height: 12px;
     }
 </style>
-<div>
-<input name="buscar_agente" id="buscar_agente" aria-controls="example" placeholder="Buscar Agente" class="form-control" type="search">
-</div>
+
 <div class="box box-primary table-responsive">
     <p></p>
     <table id="reporte-estados" class="display nowrap table-responsive" cellspacing="0" width="100%">
@@ -44,7 +40,7 @@
                 <th >TALK TIME</th>
                 <th >SALIENTE HABLADO</th>
                 <th >NIVEL DE OCUPACION CLARO </th>
-                 <th >NIVEL DE OCUPACION COSAPI</th>
+                <th >NIVEL DE OCUPACION COSAPI</th>
             </tr>
         </thead>
         <tbody>
@@ -150,32 +146,4 @@
     </table>
 
 </div>
-
-@include('layout.plugins.js-dateTables')
-
-<script>
-   $(document).ready(function() {
-        var table_reporte = $('#reporte-estados').DataTable( {
-
-            dom: 'Bfrtip',
-            paging:false,
-            fixedHeader: true,
-            scrollY:        "300px",
-            scrollX:        true,
-            scrollCollapse: true,
-            fixedColumns:   {
-                leftColumns: 2
-            },
-            buttons: [
-            'copyHtml5', 'csvHtml5', 'excelHtml5'
-            ]
-        } );
-
-        $('#buscar_agente').on( 'keyup', function () {
-            console.log(this.value);
-            table_reporte.search( this.value ).draw();
-        } );
-        
-    } );
-</script>
 

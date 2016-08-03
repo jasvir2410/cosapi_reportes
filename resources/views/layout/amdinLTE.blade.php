@@ -29,9 +29,9 @@
     ?>
     <div class="wrapper">
       <!--<clase header="para el header principal">-->
-      @include('elements.recursos.header')
+      @include('layout.recursos.header')
       <!-- para la columna de la izquierda -->
-      @include('elements.recursos.left_colum')
+      @include('layout.recursos.left_colum')
 
       <!-- Content Wrapper -->
       <div class="content-wrapper">
@@ -58,10 +58,10 @@
       </div><!-- /.content-wrapper -->
 
       <!--<para el footer>-->
-        @include('elements.recursos.footer')
+        @include('layout.recursos.footer')
       <!-- Control Sidebar -->
      <!-- <para la columna de la derecha">-->
-        @include('elements.recursos.right_colum')
+        @include('layout.recursos.right_colum')
 
       <div class="control-sidebar-bg"></div>
     </div><!-- ./wrapper -->

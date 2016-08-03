@@ -275,34 +275,34 @@ function ExtraerHora($day){
  * @param  [String] $indice            [Nombre de la columna por las cual va a agrupar]
  * @return [Array]                     [Array con los datos del consolidados de llamdas]
  */
-function ListCallsConsolidated($calls_consolidated,$indice){
+function CallsConsolidated($calls_inbound,$groupby){
 
     $time_standar = array(10,15,20);
     
-    foreach ($calls_consolidated as $calls) {
+    foreach ($calls_inbound as $calls) {
         
         
-            if(isset($Consolidated[$calls[$indice]][$calls['event']])){
+            if(isset($Consolidated[$calls[$groupby]][$calls['event']])){
 
-                $Consolidated[$calls[$indice]][$calls['event']]=$Consolidated[$calls[$indice]][$calls['event']]+1;
+                $Consolidated[$calls[$groupby]][$calls['event']]=$Consolidated[$calls[$groupby]][$calls['event']]+1;
 
-                if(isset($Consolidated[$calls[$indice]]['min_espera'])){
+                if(isset($Consolidated[$calls[$groupby]]['min_espera'])){
 
-                        $Consolidated[$calls[$indice]]['min_espera']=$calls['info1']+$Consolidated[$calls[$indice]]['min_espera'];
+                        $Consolidated[$calls[$groupby]]['min_espera']=$calls['info1']+$Consolidated[$calls[$groupby]]['min_espera'];
 
                 }else{
 
-                    $Consolidated[$calls[$indice]]['min_espera']=$calls['info1'];
+                    $Consolidated[$calls[$groupby]]['min_espera']=$calls['info1'];
 
                 }
 
-                if(isset($Consolidated[$calls[$indice]]['duracion'])){
+                if(isset($Consolidated[$calls[$groupby]]['duracion'])){
 
-                    $Consolidated[$calls[$indice]]['duracion']=$calls['info2']+$Consolidated[$calls[$indice]]['duracion'];
+                    $Consolidated[$calls[$groupby]]['duracion']=$calls['info2']+$Consolidated[$calls[$groupby]]['duracion'];
 
                 }else{
 
-                    $Consolidated[$calls[$indice]]['duracion']=$calls['info2'];
+                    $Consolidated[$calls[$groupby]]['duracion']=$calls['info2'];
 
                 }
 
@@ -314,7 +314,7 @@ function ListCallsConsolidated($calls_consolidated,$indice){
                         /*
                          * Contador de tiempo en cola < 10 y < 20
                         */
-                        $Consolidated[$calls[$indice]][$calls['event'].$time_standar[$i]]=$Consolidated[$calls[$indice]][$calls['event'].$time_standar[$i]]+1;
+                        $Consolidated[$calls[$groupby]][$calls['event'].$time_standar[$i]]=$Consolidated[$calls[$groupby]][$calls['event'].$time_standar[$i]]+1;
                         
                     }
 
@@ -326,25 +326,25 @@ function ListCallsConsolidated($calls_consolidated,$indice){
                  * Entra cuando encuentra un evento que aun no a sid contabilizado, para asì inicializar los contadores
                  */
 
-                $Consolidated[$calls[$indice]]['name']=$calls[$indice];
+                $Consolidated[$calls[$groupby]]['name']=$calls[$groupby];
 
-                $Consolidated[$calls[$indice]][$calls['event']]=1;
+                $Consolidated[$calls[$groupby]][$calls['event']]=1;
 
 
-                if(isset($Consolidated[$calls[$indice]]['min_espera'])){
+                if(isset($Consolidated[$calls[$groupby]]['min_espera'])){
 
-                    $Consolidated[$calls[$indice]]['min_espera']=$calls['info1']+$Consolidated[$calls[$indice]]['min_espera'];
+                    $Consolidated[$calls[$groupby]]['min_espera']=$calls['info1']+$Consolidated[$calls[$groupby]]['min_espera'];
 
                 }else{
-                    $Consolidated[$calls[$indice]]['min_espera']=$calls['info1'];
+                    $Consolidated[$calls[$groupby]]['min_espera']=$calls['info1'];
                 }
 
-                if(isset($Consolidated[$calls[$indice]]['duracion'])){
+                if(isset($Consolidated[$calls[$groupby]]['duracion'])){
 
-                    $Consolidated[$calls[$indice]]['duracion']=$calls['info2']+$Consolidated[$calls[$indice]]['duracion'];
+                    $Consolidated[$calls[$groupby]]['duracion']=$calls['info2']+$Consolidated[$calls[$groupby]]['duracion'];
 
                 }else{
-                    $Consolidated[$calls[$indice]]['duracion']=$calls['info2'];
+                    $Consolidated[$calls[$groupby]]['duracion']=$calls['info2'];
                 }
                 
                 for($i=0;$i<count($time_standar);$i++){
@@ -355,11 +355,11 @@ function ListCallsConsolidated($calls_consolidated,$indice){
 
                     if($calls['info1']<=$time_standar[$i]){
                       
-                        $Consolidated[$calls[$indice]][$calls['event'].$time_standar[$i]]=1;
+                        $Consolidated[$calls[$groupby]][$calls['event'].$time_standar[$i]]=1;
                         
                     }else{
 
-                        $Consolidated[$calls[$indice]][$calls['event'].$time_standar[$i]]=0;
+                        $Consolidated[$calls[$groupby]][$calls['event'].$time_standar[$i]]=0;
 
                     }
 
@@ -381,12 +381,12 @@ function ListCallsConsolidated($calls_consolidated,$indice){
  * @param  [Array]  $indice                     [Dato que define la columan que servira para agrupar]
  * @param  [Array]  $calls_queue                [Lista de nombres de Skill]
  */
-function BuilderCallsConsolidated($callsConsolidated ,$calls_queue,$indice,$list_user=''){
+function BuilderCallsConsolidated($CallsConsolidated ,$call_group,$groupby,$list_user=''){
 
     $time_standar       = array(10,20);
     $posicion           = 1;
 
-    for($j=0;$j<count($calls_queue);$j++){
+    for($j=0;$j<count($call_group);$j++){
 
         $complete_caller        =   0;
         $complete_agent         =   0;
@@ -409,32 +409,38 @@ function BuilderCallsConsolidated($callsConsolidated ,$calls_queue,$indice,$list
         $transfer_20            =   0;
 
 
-        if(isset($callsConsolidated[$calls_queue[$j][$indice]])){
+        if(isset($CallsConsolidated[$call_group[$j][$groupby]])){
              
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['TRANSFER'])){         $transfer            =   intval($callsConsolidated[$calls_queue[$j][$indice]]['TRANSFER']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETECALLER'])){   $complete_caller     =   intval($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETECALLER']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETEAGENT'])){    $complete_agent      =   intval($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETEAGENT']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['ABANDON'])){          $abandon             =   intval($callsConsolidated[$calls_queue[$j][$indice]]['ABANDON']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETECALLER10'])){ $completecaller_10   =   intval($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETECALLER10']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETECALLER15'])){ $completecaller_15   =   intval($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETECALLER15']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETECALLER20'])){ $completecaller_20   =   intval($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETECALLER20']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETEAGENT10'])){  $completeagent_10    =   intval($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETEAGENT10']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETEAGENT15'])){  $completeagent_15    =   intval($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETEAGENT15']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETEAGENT20'])){  $completeagent_20    =   intval($callsConsolidated[$calls_queue[$j][$indice]]['COMPLETEAGENT20']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['ABANDON10'])){        $abandon_10          =   intval($callsConsolidated[$calls_queue[$j][$indice]]['ABANDON10']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['ABANDON15'])){        $abandon_15          =   intval($callsConsolidated[$calls_queue[$j][$indice]]['ABANDON15']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['ABANDON20'])){        $abandon_20          =   intval($callsConsolidated[$calls_queue[$j][$indice]]['ABANDON20']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['TRANSFER10'])){       $transfer_10         =   intval($callsConsolidated[$calls_queue[$j][$indice]]['TRANSFER10']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['TRANSFER15'])){       $transfer_15         =   intval($callsConsolidated[$calls_queue[$j][$indice]]['TRANSFER15']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['TRANSFER20'])){       $transfer_20         =   intval($callsConsolidated[$calls_queue[$j][$indice]]['TRANSFER20']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['min_espera'])){       $min_espera          =   intval($callsConsolidated[$calls_queue[$j][$indice]]['min_espera']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['duracion'])){         $duracion            =   intval($callsConsolidated[$calls_queue[$j][$indice]]['duracion']); }
-            if(isset($callsConsolidated[$calls_queue[$j][$indice]]['name'])){             $name                =   $callsConsolidated[$calls_queue[$j][$indice]]['name']; }
-            if($list_user!=''){
-                $Consolidateds[$posicion]['name']                                                              =   ExtraerAgente($name,$list_user);
-            }else{
-                $Consolidateds[$posicion]['name']                                                              =   $name;
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER'])){         $transfer            =   intval($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER'])){   $complete_caller     =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT'])){    $complete_agent      =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON'])){          $abandon             =   intval($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER10'])){ $completecaller_10   =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER10']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER15'])){ $completecaller_15   =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER15']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER20'])){ $completecaller_20   =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER20']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT10'])){  $completeagent_10    =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT10']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT15'])){  $completeagent_15    =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT15']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT20'])){  $completeagent_20    =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT20']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON10'])){        $abandon_10          =   intval($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON10']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON15'])){        $abandon_15          =   intval($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON15']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON20'])){        $abandon_20          =   intval($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON20']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER10'])){       $transfer_10         =   intval($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER10']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER15'])){       $transfer_15         =   intval($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER15']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER20'])){       $transfer_20         =   intval($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER20']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['min_espera'])){       $min_espera          =   intval($CallsConsolidated[$call_group[$j][$groupby]]['min_espera']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['duracion'])){         $duracion            =   intval($CallsConsolidated[$call_group[$j][$groupby]]['duracion']); }
+            if(isset($CallsConsolidated[$call_group[$j][$groupby]]['name'])){             $name                =   $CallsConsolidated[$call_group[$j][$groupby]]['name']; }
+
+            
+            if($groupby == 'hourmod'){
+                $name = $call_group[$j]['name'];
             }
+
+            if($groupby == 'agent'){
+                $name =   ExtraerAgente($name,$list_user);
+            }
+
+            $Consolidateds[$posicion]['name']                                                                  =   $name; 
             $Consolidateds[$posicion]['recibidas']                                                             =   $complete_caller + $complete_agent + $abandon + $transfer;
             $Consolidateds[$posicion]['atendidas']                                                             =   $complete_caller + $complete_agent;
             $Consolidateds[$posicion]['abandonados']                                                           =   $abandon;
@@ -491,8 +497,6 @@ function BuilderCallsConsolidated($callsConsolidated ,$calls_queue,$indice,$list
                 $Consolidateds[$posicion]['ro20']   = convertDecimales(0,2);
             }
 
-
-
             if($Consolidateds[$posicion]['recibidas']!=0){
                 $Consolidateds[$posicion]['ns10']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_10']/$Consolidateds[$posicion]['recibidas'])*100,2);
             }else{
@@ -510,7 +514,6 @@ function BuilderCallsConsolidated($callsConsolidated ,$calls_queue,$indice,$list
             }else{
                 $Consolidateds[$posicion]['ns20']   = convertDecimales(0,2);
             }
-
 
             if($Consolidateds[$posicion]['constestadas'] !=0){
                 $Consolidateds[$posicion]['avh210']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_10']/$Consolidateds[$posicion]['constestadas'] )*100,2);
@@ -534,7 +537,12 @@ function BuilderCallsConsolidated($callsConsolidated ,$calls_queue,$indice,$list
             $posicion                               =   $posicion + 1;
             
         }else{
-            $Consolidateds[$posicion]['name']                                           =   $calls_queue[$j][$indice];
+            $name = $call_group[$j][$groupby];
+            if($groupby == 'hourmod'){
+                $name = $call_group[$j]['name'];
+            }
+
+            $Consolidateds[$posicion]['name']                                           =   $name;
             $Consolidateds[$posicion]['recibidas']                                      =   0 ;
             $Consolidateds[$posicion]['atendidas']                                      =   0 ;
             $Consolidateds[$posicion]['abandonados']                                    =   0 ;
@@ -558,9 +566,9 @@ function BuilderCallsConsolidated($callsConsolidated ,$calls_queue,$indice,$list
             $Consolidateds[$posicion]['ns10']                                           =   0 ;
             $Consolidateds[$posicion]['ns15']                                           =   0 ;
             $Consolidateds[$posicion]['ns20']                                           =   0 ;
-            $Consolidateds[$posicion]['avh210']                                           =   0 ;
-            $Consolidateds[$posicion]['avh215']                                           =   0 ;
-            $Consolidateds[$posicion]['avh220']                                           =   0 ;
+            $Consolidateds[$posicion]['avh210']                                         =   0 ;
+            $Consolidateds[$posicion]['avh215']                                         =   0 ;
+            $Consolidateds[$posicion]['avh220']                                         =   0 ;
             $posicion                               =   $posicion + 1;
         }
     }
@@ -670,20 +678,16 @@ function deletearray($value, $column, $array) {
     foreach ($array as $key => $val) {
 
         if ($val[$column] === $value) {
-
             unset($array);
-
-        }        
-
+        }
     }
-
 }
 
 
-function convertCollection($arrays, $collection){
+function convertCollection($BuilderCallsConsolidated, $objCollection){
 
-    foreach ($arrays as $array) {
-        $collection->push([
+    foreach ($BuilderCallsConsolidated as $array) {
+        $objCollection->push([
                         'name'              => $array['name'],
                         'recibidas'         => $array['recibidas'],
                         'atendidas'         => $array['atendidas'],
@@ -714,8 +718,46 @@ function convertCollection($arrays, $collection){
                     ]);
     }
 
-    return $collection;
+    return $objCollection;
     
+}
+
+/**
+ * [listHours Función para listar horas segun el parametro enviado.]
+ * @return [Array] [Lista de horas creadas segun el parametro enviado]
+ */
+function listHoursInterval()
+    {
+        
+        $array_hours = [];
+        for($hour = 0; $hour<24; $hour ++){
+            array_push($array_hours, ["hourmod" => ceroIzquierda($hour).':00', 'name' => ceroIzquierda($hour).':00 - '.ceroIzquierda($hour).':30' ]);
+            array_push($array_hours, ["hourmod" => ceroIzquierda($hour).':30', 'name' => ceroIzquierda($hour).':30 - '.ceroIzquierda($hour + 1).':00']);
+        }
+
+        return $array_hours;
+    }
+
+function detailEvents($detalleEventos){
+
+    $detailEvents = array();
+
+
+    foreach($detalleEventos as  $key => $detalleEvento){
+
+        $detailEvents[$key]['full_name_user']   = $detalleEvento['user']['primer_nombre'].'  '.$detalleEvento['user']['segundo_nombre'].'  '.$detalleEvento['user']['apellido_paterno'].'  '.$detalleEvento['user']['apellido_materno'];
+        $detailEvents[$key]['fecha_evento']     = $detalleEvento['fecha_evento'];
+        $detailEvents[$key]['name_evento']      = $detalleEvento['evento']['name'];
+        $evento_realizado                       = $detalleEvento['observaciones'];
+
+        if ($evento_realizado == '') {
+            $evento_realizado = 'Evento del Agente';
+        }
+
+        $detailEvents[$key]['accion']         = $evento_realizado;
+    }
+
+    return $detailEvents;
 }
 
 ?>

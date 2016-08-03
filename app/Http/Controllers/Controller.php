@@ -18,12 +18,20 @@ abstract class Controller extends BaseController
         return $date;
     }
 
-    protected  function MostrarSoloHora($Fecha){
+    protected  function MostrarSoloHora($fecha){
         $date='00:00:00';
-        if ($Fecha!=null){
-            $date = Carbon::parse($Fecha);
+        if( ! empty($fecha)){
+            $date = Carbon::parse($fecha);
             $date = $date->toTimeString();
         }
         return $date;
+    }
+
+    protected  function MostrarSoloFecha($fecha){
+        if( ! empty($fecha)){
+            $date = Carbon::parse($fecha);
+            $date = $date->toDateString();
+            return $date;
+        }
     }
 }

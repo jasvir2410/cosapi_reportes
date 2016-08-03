@@ -3,6 +3,7 @@
 namespace Cosapi\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class DetalleEventos extends Model
 {
@@ -16,6 +17,16 @@ class DetalleEventos extends Model
 
     public function user(){
         return $this->belongsTo('Cosapi\Models\User');
+    }
+
+    public function scopeFiltro_days($query,$days)
+    {
+
+        if( ! empty($days))
+        {
+            return    $query->whereBetween(DB::raw("DATE(fecha_evento)"),$days);
+        }
+
     }
 
 
