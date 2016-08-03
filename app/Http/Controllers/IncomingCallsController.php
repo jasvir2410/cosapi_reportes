@@ -103,12 +103,28 @@ class IncomingCallsController extends Controller
     }
 
     protected function export_excel($array){
-        Excel::create('Filename', function($excel) use($array) {           
-            $excel->sheet('prueba', function($sheet) use($array) {               
+        Excel::create('inbound_calls', function($excel) use($array) {
+
+            $excel->sheet('atendidas', function($sheet) use($array) {
                 $sheet->fromArray($array);
             });
-        })->export('csv');
-        return $array;
+
+            $excel->sheet('transferidas', function($sheet)  {
+                //$sheet->fromArray($array);
+            });
+
+            $excel->sheet('abandonadas', function($sheet)  {
+                //->fromArray($array);
+            });
+
+        })->store('xls','exports');
+
+        $data = [
+            'succes'    => true,
+            'path'      => 'http://reportes.localhost.pe/exports/inbound_calls.xls'
+        ];
+
+        return $data;
     }
 
 }

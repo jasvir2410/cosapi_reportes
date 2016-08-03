@@ -13,6 +13,6 @@
 
   <!-- /.form group -->
   <div class="form-group col-xs-0 col-xs-offset-0">
-    <a onclick="buscar();" value="Get Element By Id"  class="btn btn-primary" id="btnFiltroFecha">Buscar</a>
+    <a onclick="exportar();" value="Get Element By Id"  class="btn btn-primary" id="btnFiltroFecha">Buscar</a>
   </div> 
 </div>

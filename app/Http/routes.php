@@ -10,4 +10,4 @@ Route::post('incoming_calls'		, ['uses'=>'IncomingCallsController@index']);
 Route::post('outgoing_calls'		, ['uses'=>'OutgoingCallsController@index']);
 Route::post('consolidated_calls'	, ['uses'=>'ConsolidatedCallsController@index']);
 
-Route::get('prueba'		            , ['uses'=>'IncomingCallsController@prueba']);
+Route::post('prueba'		        , ['uses'=>'IncomingCallsController@prueba']);

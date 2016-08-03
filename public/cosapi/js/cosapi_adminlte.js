@@ -5,6 +5,13 @@
  */
 
 $(document).ready(function() {
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+        }
+    });
+
     /* script para daterange y agregarle formato aÃ±o-mes-dia */
     $('input[name="fecha_evento"]').daterangepicker({
         locale: {
@@ -181,3 +188,26 @@ function get_data_filters(evento){
     return data;
 }
 
+
+function exportar() {
+    cargar_ajax('POST', 'prueba');
+}
+
+function cargar_ajax(type,url){
+
+    var token =  $('input[name=_token]').val();
+
+    $.ajax({
+        type        : type,
+        url         : url,
+        cache       : false,
+        data        : '_token='+token,
+
+        success: function(data){
+            location.href = data.path;
+        },
+        error: function(data){
+            //$('#'+nameDiv).html(msjError);
+        }
+    });
+}
