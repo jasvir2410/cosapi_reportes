@@ -13,6 +13,8 @@
 			<input type="hidden" name="_token" value="{!! csrf_token() !!}">
 
 			@include('filtros.filtro-fecha')
+			@include('filtros.button-search')
+			</div>
 		</div>
 	{!! Form::close() !!}
 

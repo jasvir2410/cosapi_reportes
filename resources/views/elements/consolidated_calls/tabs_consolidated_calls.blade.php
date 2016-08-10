@@ -21,9 +21,10 @@
             </a>
         </li>
     </ul>
-
+    <input type="hidden" id="hidDefaultEvent" value="skills_group">
     <div class="panel-body" >
         <div class="tab-pane fade active in" id="panel-report">
+            <div style="width:100%; background-color:#3c8dbc; padding: 5px;" ><button onclick="exportar('csv','export_consolidated');">Csv</button><button onclick="exportar('excel','export_consolidated');">Excel</button></div>
             <table id="table-consolidated" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
                 <thead>
                     <tr>

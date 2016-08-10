@@ -36,10 +36,6 @@ function dataTables_entrantes(nombreDIV, data, route){
             type    : 'POST',
             data    : data
         },
-        dom                 : 'Bfrtip',
-        buttons             : [
-            'copyHtml5', 'csvHtml5', 'excelHtml5'
-        ],
 
         "paging"            : true,
         "pageLength"        : 100,
@@ -85,24 +81,14 @@ function dataTables_lang_spanish(){
 function columns_datatable(route){
     if(route == 'incoming_calls'){
         var columns =   [
-            {"data" : "fechamod"},
-            {"data" : "timemod"},
-            {"data" : "clid"},
-            {"data" : "agent"},
-            {"data" : "queue"},
-            {"data" : "info2"},
-            {"data" : "event"},
-            {"data" : "info1"}
-        ];
-    }
-
-    if(route == 'calls_outgoing'){
-        var columns =   [
             {"data" : "date"},
             {"data" : "hour"},
-            {"data" : "src"},
-            {"data" : "dst"},
-            {"data" : "billsec"}
+            {"data" : "telephone"},
+            {"data" : "agent"},
+            {"data" : "skill"},
+            {"data" : "duration"},
+            {"data" : "action"},
+            {"data" : "waittime"}
         ];
     }
 
@@ -154,7 +140,7 @@ function columns_datatable(route){
             {"data" : "hour"},
             {"data" : "src"},
             {"data" : "dst"},
-            {"data" : "duration"}
+            {"data" : "billsec"}
         ];
     }
 
@@ -189,11 +175,14 @@ function get_data_filters(evento){
 }
 
 
-function exportar() {
-    cargar_ajax('POST', 'prueba');
+function exportar(format_export, event) {
+    var days = $('#texto').val();
+    export_ajax('POST',event,format_export,days);
 }
 
-function cargar_ajax(type,url){
+function export_ajax(type, url, format_export='', days=''){
+
+    var dialog = cargar_dialog('primary','Copsapi Data','Cargando el Excel',false);
 
     var token =  $('input[name=_token]').val();
 
@@ -201,13 +190,53 @@ function cargar_ajax(type,url){
         type        : type,
         url         : url,
         cache       : false,
-        data        : '_token='+token,
+        data        : {
+            _token : token,
+            format_export : format_export,
+            days : days,
+        },
 
+        beforeSend: function(data) {
+            dialog.open();
+        },
         success: function(data){
-            location.href = data.path;
+            //var array_url = [data.path,data.ruta2,data.ruta3];
+            var array_url = data.path;
+            for (var i = 0; i <array_url.length; i++) {
+                 downloadURL(array_url[i],i);
+            }
         },
         error: function(data){
             //$('#'+nameDiv).html(msjError);
+        },
+        complete: function(){
+            dialog.close();     
         }
     });
+}
+
+function downloadURL(url,index){
+    var hiddenIFrameID = 'hiddenDownloader' + index;
+    var iframe = document.createElement('iframe');
+    iframe.id = hiddenIFrameID;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    iframe.src = url;
+}
+
+function cargar_dialog(new_type,title,message,closable){
+
+    var message = $('<div></div>');
+        message.append('<center><b>Porfavor no cerrar la ventana</b></br><img src="../cosapi/img/loading_bar_cicle.gif" /></center>');
+
+    var dialog = new BootstrapDialog({
+        size        : BootstrapDialog.SIZE_SMALL,
+        type        : 'type-' + new_type,
+        title       : title,
+        message     : message,
+        closable    : closable,
+
+    });
+
+    return dialog;
 }

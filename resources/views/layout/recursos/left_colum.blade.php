@@ -5,7 +5,7 @@
           <!-- Sidebar user panel -->
           <div class="user-panel">
             <div class="pull-left image">
-              <img src="plugins/adminLTE/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+              <img src="cosapi/img/logo_cosapi.jpg" class="img-circle" alt="User Image">
             </div>
             <div class="pull-left info">
               <p>Cosapi Data</p>
@@ -39,6 +39,7 @@
                 <i class="fa fa-phone-square"></i> <span>REPORTING CALLS</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
+                <li ><a tabindex="-1" href="#" id="agents_online" class="reportes"><i class="fa fa-circle-o text-red"></i> Agentes Online</a></li>
                 <li><a href="#" id="incoming_calls"     class="reportes"><i class="fa fa-circle-o text-green"></i> Inbound Calls</a></li>
                 <li><a href="#" id="outgoing_calls"     class="reportes"><i class="fa fa-circle-o text-yellow"></i> Outbound Calls</a></li>
                 <li><a href="#" id="consolidated_calls" class="reportes"><i class="fa fa-circle-o text-blue"></i> Consolidated Calls</a></li>

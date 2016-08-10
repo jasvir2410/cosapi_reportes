@@ -10,4 +10,9 @@ Route::post('incoming_calls'		, ['uses'=>'IncomingCallsController@index']);
 Route::post('outgoing_calls'		, ['uses'=>'OutgoingCallsController@index']);
 Route::post('consolidated_calls'	, ['uses'=>'ConsolidatedCallsController@index']);
 
-Route::post('prueba'		        , ['uses'=>'IncomingCallsController@prueba']);
+Route::post('export_incoming'		        , ['uses'=>'IncomingCallsController@export']);
+Route::post('export_outgoing'		        , ['uses'=>'OutgoingCallsController@export']);
+Route::post('export_consolidated'		    , ['uses'=>'ConsolidatedCallsController@export']);
+
+// reporte de llamadas salienes
+Route::post('agents_online'										    , ['uses'=>'AgentsOnlineController@index']);

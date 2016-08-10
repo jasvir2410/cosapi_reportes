@@ -1,6 +1,8 @@
 @include('layout.plugins.css-preloader')
 @include('layout.plugins.css-datepicker')
 @include('layout.plugins.css-dateTables')
+@include('layout.plugins.css-bootstrap3_dialog')
+@include('layout.plugins.js-bootstrap3_dialog')
 @include('layout.plugins.js-datepicker')
 @include('layout.plugins.js-dateTables')
 
@@ -14,6 +16,7 @@
         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
 
         @include('filtros.filtro-fecha')
+        </div>
     </div>
     {!! Form::close() !!}
 

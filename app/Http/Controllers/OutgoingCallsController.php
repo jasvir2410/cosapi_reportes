@@ -3,16 +3,18 @@
 namespace Cosapi\Http\Controllers;
 
 use Cosapi\Http\Requests;
-use Cosapi\Models\AsteriskCDR;
 use Illuminate\Http\Request;
-use Cosapi\Http\Controllers\Controller;
+use Cosapi\Models\AsteriskCDR;
+use Cosapi\Http\Controllers\CosapiController;
+use Cosapi\Collector\Collector;
 
 use DB;
-use Datatables;
 use Illuminate\Support\Facades\Log;
 
-class OutgoingCallsController extends Controller
+class OutgoingCallsController extends CosapiController
 {
+
+    
     public function index(Request $request)
     {        
         if ($request->ajax()){
@@ -24,6 +26,7 @@ class OutgoingCallsController extends Controller
         }
     }
 
+
     /**
      * [listar_llamadas_consolidadas Función para listar el consolidado de llamadas]
      * @param  Request   $request        [Dato para identifcar GET O POST]
@@ -31,44 +34,99 @@ class OutgoingCallsController extends Controller
      * @return [Array]                   [Retorna la lista del consolidado de llamadas]
      */
     public function list_calls_outgoing($fecha_evento){
-        
-        $days                   = explode(' - ', $fecha_evento);
-        $tamano_anexo           = array ('3','4');
-        $tamano_telefono        = array ('5','6','7','9');
-        $calls_outgoing         = $this->query_calls_outgoing($days, $tamano_anexo, $tamano_telefono);        
-        $list_call_outgoing     = $this->format_datatable($calls_outgoing);
+                
+        $query_calls_outgoing   = $this->query_calls_outgoing($fecha_evento);
+        $builderview            = $this->builderview($query_calls_outgoing);
+        $outgoingcollection     = $this->outgoingcollection($builderview);        
+        $list_call_outgoing     = $this->FormatDatatable($outgoingcollection);
 
         return $list_call_outgoing;
     }
 
-    protected function query_calls_outgoing($days, $tamano_anexo, $tamano_telefono){
-        $query_calls_outgoing=AsteriskCDR::Select()
+
+    public function export(Request $request){
+        $export_outgoing  = call_user_func_array([$this,'export_'.$request->format_export], [$request->days]);
+        return $export_outgoing;
+    }
+
+ 
+    protected function query_calls_outgoing($fecha_evento){
+        $days                   = explode(' - ', $fecha_evento);
+        $tamano_anexo           = array ('3','4');
+        $tamano_telefono        = array ('5','6','7','9');
+        $query_calls_outgoing   = AsteriskCDR::Select()
                                     ->whereIn(DB::raw('LENGTH(dst)'),$tamano_telefono)
                                     ->where('dst','not like','*%')
                                     ->where('disposition','=','ANSWERED')
                                     ->filtro_days($days)
                                     ->OrderBy('src')
-                                    ->get();
+                                    ->get()
+                                    ->toArray();
 
 
         return $query_calls_outgoing;
     }
 
 
-    protected function format_datatable($arrays)
-    {
-        $format_datatable  = Datatables::of($arrays)
-                                    ->addColumn('date', function ($array) {
-                                            return $this->MostrarSoloFecha($array->calldate);
-                                        })
-                                    ->addColumn('hour', function ($array) {
-                                            return $this->MostrarSoloHora($array->calldate);
-                                        })
-                                    ->addColumn('duration', function ($array) {
-                                        return conversorSegundosHoras($array->billsec,false);
-                                    })
-                                    ->make(true);
-        return $format_datatable;
+    protected function builderview($query_calls_outgoing){
+        $action = '';
+        $posicion = 0;
+        foreach ($query_calls_outgoing as $query_call) {
+            $builderview[$posicion]['date']        = $this->MostrarSoloFecha($query_call['calldate']);
+            $builderview[$posicion]['hour']        = $this->MostrarSoloHora($query_call['calldate']);
+            $builderview[$posicion]['src']         = $query_call['src'];
+            $builderview[$posicion]['dst']         = $query_call['dst'];
+            $builderview[$posicion]['billsec']     = conversorSegundosHoras($query_call['billsec'],false);
+            $posicion ++;
+        }
+        if(!isset($builderview)){
+            $builderview = [];
+        }
+        return $builderview;
+    }
+
+
+    protected function outgoingcollection($builderview){
+        $outgoingcollection                 = new Collector;
+        foreach ($builderview as $view) {
+            $outgoingcollection->push([
+                'date'                      => $view['date'],
+                'hour'                      => $view['hour'],
+                'src'                       => $view['src'],
+                'dst'                       => $view['dst'],
+                'billsec'                   => $view['billsec']
+            ]);
+        }
+
+        return $outgoingcollection;
+    }
+
+
+    protected function export_csv($days){
+
+        $builderview = $this->builderview($this->query_calls_outgoing($days));
+        $this->BuilderExport($builderview,'outgoing_calls','csv','exports');
+
+        $data = [
+            'succes'    => true,
+            'path'      => ['http://'.$_SERVER['HTTP_HOST'].'/exports/outgoing_calls.csv']
+        ];
+
+        return $data;
+    }
+
+
+    protected function export_excel($days){
+
+        $builderview = $this->builderview($this->query_calls_outgoing($days,'outgoing_calls'));
+        $this->BuilderExport($builderview,'outgoing_calls','xlsx','exports');
+
+        $data = [
+            'succes'    => true,
+            'path'      => ['http://'.$_SERVER['HTTP_HOST'].'/exports/outgoing_calls.csv']
+        ];
+
+        return $data;
     }
 
 }
