@@ -14,6 +14,7 @@
         </div>
         <input type="hidden" id="url" value='listar_llamadas_contestadas'>
         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
+        <input type="hidden" id="hidEvent" value='export_consolidated'>
 
         @include('filtros.filtro-fecha')
         </div>

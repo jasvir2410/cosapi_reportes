@@ -52,10 +52,12 @@ class OutgoingCallsController extends CosapiController
  
     protected function query_calls_outgoing($fecha_evento){
         $days                   = explode(' - ', $fecha_evento);
-        $tamano_anexo           = array ('3','4');
-        $tamano_telefono        = array ('5','6','7','9');
+        $tamano_anexo           = array ('3');
+        $tamano_telefono        = array ('7','9');
         $query_calls_outgoing   = AsteriskCDR::Select()
+                                    ->whereIn(DB::raw('LENGTH(src)'),$tamano_anexo)
                                     ->whereIn(DB::raw('LENGTH(dst)'),$tamano_telefono)
+                                    ->where('src','like','2%')
                                     ->where('dst','not like','*%')
                                     ->where('disposition','=','ANSWERED')
                                     ->filtro_days($days)
@@ -72,11 +74,11 @@ class OutgoingCallsController extends CosapiController
         $action = '';
         $posicion = 0;
         foreach ($query_calls_outgoing as $query_call) {
-            $builderview[$posicion]['date']        = $this->MostrarSoloFecha($query_call['calldate']);
-            $builderview[$posicion]['hour']        = $this->MostrarSoloHora($query_call['calldate']);
-            $builderview[$posicion]['src']         = $query_call['src'];
-            $builderview[$posicion]['dst']         = $query_call['dst'];
-            $builderview[$posicion]['billsec']     = conversorSegundosHoras($query_call['billsec'],false);
+            $builderview[$posicion]['date']          = $this->MostrarSoloFecha($query_call['calldate']);
+            $builderview[$posicion]['hour']          = $this->MostrarSoloHora($query_call['calldate']);
+            $builderview[$posicion]['annexedorigin'] = $query_call['src'];
+            $builderview[$posicion]['destination']   = $query_call['dst'];
+            $builderview[$posicion]['calltime']      = conversorSegundosHoras($query_call['billsec'],false);
             $posicion ++;
         }
         if(!isset($builderview)){
@@ -92,9 +94,9 @@ class OutgoingCallsController extends CosapiController
             $outgoingcollection->push([
                 'date'                      => $view['date'],
                 'hour'                      => $view['hour'],
-                'src'                       => $view['src'],
-                'dst'                       => $view['dst'],
-                'billsec'                   => $view['billsec']
+                'annexedorigin'             => $view['annexedorigin'],
+                'destination'               => $view['destination'],
+                'calltime'                  => $view['calltime']
             ]);
         }
 
@@ -123,7 +125,7 @@ class OutgoingCallsController extends CosapiController
 
         $data = [
             'succes'    => true,
-            'path'      => ['http://'.$_SERVER['HTTP_HOST'].'/exports/outgoing_calls.csv']
+            'path'      => ['http://'.$_SERVER['HTTP_HOST'].'/exports/outgoing_calls.xlsx']
         ];
 
         return $data;

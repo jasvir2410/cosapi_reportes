@@ -19,7 +19,7 @@
     <input type="hidden" id="hidDefaultEvent" value="calls_completed">
     <div class="panel-body" >
         <div class="tab-pane fade active in" id="panel-report">
-            <div style="width:100%; background-color:#3c8dbc; padding: 5px;" ><button onclick="exportar('csv','export_incoming');">Csv</button><button onclick="exportar('excel','export_incoming');">Excel</button></div>
+            @include('filtros.export')
             <table id="table-incoming" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
                 <thead>
                 <tr>

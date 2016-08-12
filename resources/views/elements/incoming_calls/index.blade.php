@@ -15,6 +15,7 @@
 				<h3 class="box-title"><b>Lista de LLamadas Entrantes</b></h3>
 			</div>
 			<input type="hidden" name="_token" value="{!! csrf_token() !!}">
+			<input type="hidden" id="hidEvent" value='export_incoming'>
 
 			@include('filtros.filtro-fecha')
 			</div>

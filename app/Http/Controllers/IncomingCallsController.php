@@ -82,6 +82,7 @@ class IncomingCallsController extends CosapiController
     protected function builderview($query_calls){
         $action = '';
         $posicion = 0;
+        $builderview = [];
         foreach ($query_calls as $query_call) {
             $builderview[$posicion]['date']        = $query_call['fechamod'];
             $builderview[$posicion]['hour']        = $query_call['timemod'];
@@ -109,9 +110,7 @@ class IncomingCallsController extends CosapiController
             $builderview[$posicion]['waittime']    = conversorSegundosHoras($query_call['info1'],false);
             $posicion ++;
         }
-        if(!isset($builderview)){
-            $builderview = [];
-        }
+
         return $builderview;
     }
 

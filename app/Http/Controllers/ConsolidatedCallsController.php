@@ -133,7 +133,7 @@ class ConsolidatedCallsController extends CosapiController
     protected function CallsConsolidated($calls_inbound,$groupby){
 
         $time_standar = array(10,15,20);
-        
+        $Consolidated = [];
         foreach ($calls_inbound as $calls) {
             
             
@@ -224,6 +224,7 @@ class ConsolidatedCallsController extends CosapiController
             
         
         }
+
         return $Consolidated ;
 
     }
@@ -240,7 +241,7 @@ class ConsolidatedCallsController extends CosapiController
 
         $time_standar       = array(10,20);
         $posicion           = 1;
-
+        $Consolidateds = [];
         for($j=0;$j<count($call_group);$j++){
 
             $complete_caller        =   0;
@@ -427,6 +428,7 @@ class ConsolidatedCallsController extends CosapiController
                 $posicion                               =   $posicion + 1;
             }
         }
+
 
         return $Consolidateds;
 

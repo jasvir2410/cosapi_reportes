@@ -15,11 +15,13 @@
     <link rel="stylesheet" href="{{ asset('plugins/adminLTE/css/AdminLTE.min.css')}}">
     <!-- para cambiar el color del panel de adminlte -->
     <link rel="stylesheet" href="{{ asset('plugins/adminLTE/css/skins/_all-skins.min.css') }}">
+    <!-- estilos para la imagen de cargando -->
+    <link rel="stylesheet" href="{{ asset('cosapi/css/preloader.css') }}">
      <!--para incluir otros css-->
      @yield('css')
   </head>
 
-  <body class="hold-transition skin-blue sidebar-mini">
+  <body class="hold-transition skin-red-light sidebar-mini sidebar-collapse ">
     <!--para que se muestre la pagina en donde estas -->
     <?php
       $crumbs = explode("/",$_SERVER["REQUEST_URI"]);
@@ -71,6 +73,15 @@
     <script src="{{ asset('plugins/jQuery/jQuery-2.1.4.min.js')}}"></script>
     <script src="{{ asset('plugins/jQueryUI/jquery-ui.js')}}"></script>
     <script src="{{ asset('bootstrap/js/bootstrap.min.js')}}"></script>
+    <script src="{{ asset('extras/bootstrap3-dialog/js/bootstrap-dialog.min.js')}}">  </script>
+
+    <!-- Estilo del  AminLTE -->
+    <script>
+      var AdminLTEOptions = {
+        sidebarExpandOnHover: true,
+        enableBSToppltip: true
+      };
+    </script>
     <script src="{{ asset('plugins/adminLTE/js/app.min.js')}}"></script>
     <script src="{{ asset('plugins/adminLTE/js/funcionalidades.js')}}"></script>
     <!--para incluir todos los demas script que se necesite-->

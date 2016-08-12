@@ -4,6 +4,13 @@
 
 @section('content')
 	<div  id="container"><br>
+		<div class="loading" id="loading" style="display:none">
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</div>
 	</div>
 @endsection
 
@@ -20,6 +27,9 @@
 						_token 	: $('input[name=_token]').val(),
 						url 	: url
 				},
+				beforedSend: function(data){
+					$('#loading').show();
+				},
 				success : function(data) {
 					$('#container').html (data);
 
@@ -29,6 +39,9 @@
 				},
 				error : function(data) {
 					$("#container").html ("problemas para actualizar");
+				},
+				complete: function(){
+					$('#loading').hide();
 				}
 			});
 		});

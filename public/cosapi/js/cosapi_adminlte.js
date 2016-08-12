@@ -138,9 +138,9 @@ function columns_datatable(route){
         var columns =   [
             {"data" : "date"},
             {"data" : "hour"},
-            {"data" : "src"},
-            {"data" : "dst"},
-            {"data" : "billsec"}
+            {"data" : "annexedorigin"},
+            {"data" : "destination"},
+            {"data" : "calltime"}
         ];
     }
 
@@ -175,8 +175,9 @@ function get_data_filters(evento){
 }
 
 
-function exportar(format_export, event) {
+function exportar(format_export) {
     var days = $('#texto').val();
+    var event =$('#hidEvent').val()
     export_ajax('POST',event,format_export,days);
 }
 
