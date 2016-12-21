@@ -29,5 +29,9 @@ class DetalleEventos extends Model
 
     }
 
+    public function scopeSelect_fechamod($query)
+    {
+        return $query->Select(DB::raw("*,DATE(fecha_evento) as fechamod, TIME(fecha_evento) AS timemod,  DATE_FORMAT((DATE_SUB(fecha_evento, INTERVAL ( MINUTE(fecha_evento)%30 )MINUTE)), '%H:%i') AS hourmod " ));
+    }
 
 }

@@ -8,22 +8,26 @@ use Illuminate\Http\Request;
 use Cosapi\Models\User;
 use Cosapi\Models\Eventos;
 use Cosapi\Models\AsteriskCDR;
+use Cosapi\Models\DetalleEventosHistory;
 use Cosapi\Models\DetalleEventos;
 use Cosapi\Http\Controllers\CosapiController;
 
 use Cosapi\Http\Requests;
 use Illuminate\Support\Facades\DB;
 use Cosapi\Http\Controllers\Controller;
+use Excel;
 use Yajra\Datatables\Facades\Datatables;
 use Cosapi\Http\Controllers\IncomingCallsController;
 
 
 class EventsAgentController extends CosapiController
 {
-    public function index(){
-        return view('elements/events_detail/detail_events');
-    }
 
+    /**
+     * [events_consolidated Función que retorna la vista o datos para el reporte de Consolidated Events]
+     * @param  Request $request  [Recepciona datos enviado por POST]
+     * @return [view]            [Vista o Datos para cargar en el reporte consolidated]
+     */
     public function events_consolidated(Request $request){
 
         if ($request->ajax()){
@@ -33,9 +37,50 @@ class EventsAgentController extends CosapiController
                 return view('elements/events_consolidated/index');
             }
         }
+
     }
 
 
+
+    /**
+     * [events_detail Función que carga los datos y vista del Details Events]
+     * @param  Request $request [Recepciona los datos por POST]
+     * @return [view]           [Retorna una vista y datos del reporte Details Events]
+     */
+    public function events_detail (Request $request){
+        if ($request->ajax()){
+            if ($request->fecha_evento){
+
+                $days                   = explode(' - ',$request->fecha_evento);
+                $query_events           = $this->query_events($days);
+                $array_detail_events    = detailEvents($query_events);
+                $objCollection          = $this->convertCollection($array_detail_events);
+                $detail_events          = $this->FormatDatatable($objCollection);
+                return $detail_events;
+
+            }else{
+                return view('elements/events_detail/index');
+            }
+        }
+    }
+
+
+    /**
+     * [export Función que permite exportar los datos de la tabla]
+     * @param  Request $request [Recepciona datos enviado por POST]
+     * @return [array]          [Ubicaciones de los archivos a exportar]
+     */
+    public function export(Request $request){
+        $export_contestated  = call_user_func_array([$this,'export_'.$request->format_export], [$request->days]);
+        return $export_contestated;
+    }
+
+
+    /**
+     * [list_state_agents Función que obtiene los datos a cargar en el reporte de Consolidated Events]
+     * @param  [date]  $fecha_evento [Fecha de la consulta]
+     * @return [array]               [Array con datos del consolidado de eventos]
+     */
     protected function list_state_agents($fecha_evento){
 
         $query_estado_agentes   = $this->query_estado_agentes($fecha_evento);
@@ -46,195 +91,113 @@ class EventsAgentController extends CosapiController
     }
 
 
+    /**
+     * [query_estado_agentes Función que consulta los datos de Consolidated Events]
+     * @param  [date]  $fecha_evento [Fecha de la consulta]
+     * @return [array]               [Datos extraidos del Consolidated Events desde la Base de Datos]
+     */
     protected function query_estado_agentes ($fecha_evento)
     {
         list($fecha_inicial,$fecha_final) = explode(' - ', $fecha_evento);
 
-        $AsteriskCDR        =  AsteriskCDR::Select('accountcode as username' , DB::raw('SUM(billsec) as TiempoLlamada') )
-                                    ->whereBetween(DB::raw("DATE(calldate)"),[$fecha_inicial, $fecha_final])
-                                    ->where('disposition','=','ANSWERED')
-                                    ->WHERE('lastapp','=','Dial')
-                                    ->groupBy('accountcode')
-                                    ->get()->toArray();
+        $query_estado_agentes = DB::select('CALL sp_get_consolidated_events ("'.$fecha_inicial.'","'.$fecha_final.'")');
 
-        $Usuarios           = User::get()->toArray();
-        $Eventos            = Eventos::Select()->where('estado_id','=','1')->get();
-        $Eventos_Auxiliares = Eventos::Select('id')->where('eventos_auxiliares','=','1' )->get();
-        $Cosapi_Eventos     = Eventos::Select('id')->where('cosapi_eventos','=','1' )->get();
-        $Claro_Eventos      = Eventos::Select('id')->where('claro_eventos','=','1' )->get();
-
-        $DetalleEventos     = DetalleEventos::Select()
-                                    ->with('evento')
-                                    ->whereBetween(DB::raw("DATE(fecha_evento)"),[$fecha_inicial, $fecha_final])
-                                    ->OrderBy('user_id', 'asc')
-                                    ->OrderBy('fecha_evento', 'asc')
-                                    ->get()->toArray();
-        
-        $BuilderViewEstateAgent = $this->BuilderViewEstateAgent($Usuarios,$Eventos,$DetalleEventos,$AsteriskCDR,false,$Eventos_Auxiliares,$Cosapi_Eventos,$Claro_Eventos,$fecha_evento);
-        return $BuilderViewEstateAgent;
-    }
-
-    protected function BuilderViewEstateAgent($usuarios, $eventos,$detalleEventos,$AsteriskCDR,$formato,$eventos_auxiliares,$cosapi_eventos,$claro_eventos,$fecha_evento){
-        $BuilderViewEstateAgent = [];
-        $posicion = 0;
-        $resumenEventos = calcularTiempoEntreEstados($usuarios,$eventos,$detalleEventos);
-        
-        foreach ($resumenEventos as $key => $resumenEvento){
-            $totalTiemposTrabajadosCosapi = 0;
-            $totalTiemposTrabajadosClaro  = 0;
-            $totalTiemposAuxiliares       = 0;
-            $tiempoTotalLogueado          = 0;
-            $totalACD                     = 0;
-            $tiempoLlamadaEntrante        = 0;
-            $tiempoLlamadaSaliente        = 0;
-            $totaltiempoatendida          = 0;
-            foreach ($resumenEvento as $Evento){
-                $BuilderViewEstateAgent[$posicion]['agent']                 = $usuarios[$key-1]['primer_nombre'].' '.$usuarios[$key-1]['apellido_paterno']; 
-                $BuilderViewEstateAgent[$posicion][$Evento['evento_id']]    = conversorSegundosHoras($Evento['tiempo'], false);                                
-                $tiempoTotalLogueado                                        = $tiempoTotalLogueado + $Evento['tiempo'];
-                $evento_id                                                  = $Evento['evento_id'];
-                
-                //  Calculo para Tiempos Auxiliares-->
-                foreach ($eventos_auxiliares as $eventos_auxiliar){
-
-                    $id_evento_auxiliar = $eventos_auxiliar['id'];
-
-                    if ( $evento_id == $id_evento_auxiliar  ){
-                        $totalTiemposAuxiliares += $Evento['tiempo'];
-                    }
-                }    
-
-                 
-               
-                // Calculo para totalTiemposTrabajados para cosapi-->
-                foreach ($cosapi_eventos as $cosapi_evento){
-
-                    $id_cosapi_evento = $cosapi_evento['id'];
-
-                    if ( $evento_id == $id_cosapi_evento  ){
-                        $totalTiemposTrabajadosCosapi += $Evento['tiempo'];
-                    }
-                    
-
-                }
-
-                // Calculo para totalTiemposTrabajados para Claro-->
-                foreach ($claro_eventos as $claro_evento){
-
-                    $id_claro_evento = $claro_evento['id'];
-                
-                    if ($evento_id == $id_claro_evento){
-                        $totalTiemposTrabajadosClaro += $Evento['tiempo'];
-                    }
-                    
-                }   
-                   
-
-                // Calculo para tiempo ACD -->
-                if ( $evento_id == 2 ){
-                    $totalACD = $Evento['tiempo'];
-                }
-               
-                // Calculo para tiempoLlamadaEntrante-->
-                if ( $evento_id == 9 ){
-                    $tiempoLlamadaEntrante = $Evento['tiempo'];
-                }
-                
-                                     
-            }
-            $comingcaller = new IncomingCallsController();
-            $result_tiempoatendida  = $comingcaller->query_calls($fecha_evento,'calls_completed',$usuarios[$key-1]['username']);
-            foreach ($result_tiempoatendida as $tiempoatendida) {
-                $totaltiempoatendida+=$tiempoatendida['info2'];
-            }
-            $tiempoLlamadaSaliente                              = calcularTiempoLlamadaSaliente($usuarios[$key-1]['username'], $AsteriskCDR);
-            $tiempoTotalHablado                                 = $tiempoLlamadaEntrante + $tiempoLlamadaSaliente;
-
-            $BuilderViewEstateAgent[$posicion]['logueado']      = conversorSegundosHoras($tiempoTotalLogueado, false) ;
-            $BuilderViewEstateAgent[$posicion]['auxiliares']    = conversorSegundosHoras($totalTiemposAuxiliares, false) ;
-            $BuilderViewEstateAgent[$posicion]['talk']          = conversorSegundosHoras($tiempoTotalHablado, false) ;
-            $BuilderViewEstateAgent[$posicion]['saliente']      = conversorSegundosHoras($tiempoLlamadaSaliente, false) ;
-
-            if($tiempoTotalLogueado != $totalTiemposAuxiliares){
-                $BuilderViewEstateAgent[$posicion]['ocupation_claro']  = round(($totalTiemposTrabajadosClaro/($tiempoTotalLogueado - $totalTiemposAuxiliares))*100,2);
-                $BuilderViewEstateAgent[$posicion]['ocupation_cosapi'] = round(($totalTiemposTrabajadosCosapi/($tiempoTotalLogueado - $totalTiemposAuxiliares))*100,2);
-            }else{
-                $BuilderViewEstateAgent[$posicion]['ocupation_claro']  = 0;
-                $BuilderViewEstateAgent[$posicion]['ocupation_cosapi'] = 0; 
-            }           
-            
-            $BuilderViewEstateAgent[$posicion]['time_attended']        = conversorSegundosHoras($totaltiempoatendida, false); 
-
-            $posicion++;
-        }
-        return $BuilderViewEstateAgent;
+        return $query_estado_agentes;
     }
 
 
-    protected function collection_state_agent($BuilderViewEstateAgent){
+    /**
+     * [collection_state_agent Función que transforma un Array en Collection]
+     * @param  [array]      $query_estado_agentes [Datos del Consolidated Events]
+     * @return [collection]                       [Datos en formato Colecction del reporte Consolidated Events]
+     */
+    protected function collection_state_agent($query_estado_agentes){
         $estateagentcollection                 = new Collector;
-        foreach ($BuilderViewEstateAgent as $view) {
+        foreach ($query_estado_agentes as $view) {
             $estateagentcollection->push([
-                'agent'              => $view['agent'],
-                'acd'                => $view['1'],
-                'break'              => $view['2'],
-                'sshh'               => $view['3'],
-                'refrigerio'         => $view['4'],
-                'feeedback'          => $view['5'],
-                'capacitacion'       => $view['6'],
-                'backoffice'         => $view['7'],
-                'indbound'           => $view['time_attended'],
-                'outbound'           => $view['9'],
-                'acw'                => $view['10'],
-                'desconectado'       => $view['15'],
-                'logueado'           => $view['logueado'],
-                'auxiliares'         => $view['auxiliares'],
-                'talk'               => $view['talk'],
-                'saliente'           => $view['saliente'],
-                'ocupation_claro'    => $view['ocupation_claro'],
-                'ocupation_cosapi'   => $view['ocupation_cosapi'],
+                'agent'              => $view->agente,
+                'acd'                => conversorSegundosHoras($view->acd,false),
+                'break'              => conversorSegundosHoras($view->break,false),
+                'sshh'               => conversorSegundosHoras($view->sshh,false),
+                'refrigerio'         => conversorSegundosHoras($view->refrigerio,false),
+                'feeedback'          => conversorSegundosHoras($view->feedback,false),
+                'capacitacion'       => conversorSegundosHoras($view->capacitacion,false),
+                'backoffice'         => conversorSegundosHoras($view->backoffice,false),
+                'indbound'           => conversorSegundosHoras($view->inbound,false),
+                'outbound'           => conversorSegundosHoras($view->outbound,false),
+                'acw'                => conversorSegundosHoras($view->acw,false),
+                'login'              => conversorSegundosHoras($view->login,false),
+                'desconectado'       => conversorSegundosHoras($view->desconectado,false),
+                'logueado'           => conversorSegundosHoras($view->logueado,false),
+                'auxiliares'         => conversorSegundosHoras($view->auxiliar,false),
+                'talk'               => conversorSegundosHoras($view->talk_time,false),
+                'saliente'           => conversorSegundosHoras($view->saliente_hablado,false)
             ]);
         }
-
         return $estateagentcollection;
     }
 
 
-    public function events_detail (Request $request){
-        if ($request->ajax()){
-            if ($request->fecha_evento){
-
-                $days                   = explode(' - ',$request->fecha_evento);
-                $query_events           = $this->query_events($days);
-                $array_detail_events    = detailEvents($query_events);
-                $objCollection          = $this->convertCollection($array_detail_events);
-                $detail_events          = $this->format_datatable($objCollection);
-                return $detail_events;
-
-            }else{
-                return view('elements/events_detail/index');
-            }
-        }
-    }
-
+    /**
+     * [query_events Función en donde se encunetra el query que consulta los datos del Details Event Empresa]
+     * @param  [array] $days [Fecha de la consulta]
+     * @return [array]       [Retorna datos para el Details Events]
+     */
     protected function query_events($days){
 
-        $detail_events     = DetalleEventos::Select()
-                                ->with('evento','user')
-                                ->filtro_days($days)
-                                ->OrderBy(DB::raw('user_id'), 'asc')
-                                ->OrderBy(DB::raw('DATE(fecha_evento)'), 'asc')
-                                ->OrderBy(DB::raw('TIME(fecha_evento)'), 'asc')
-                                ->get();
+        if($days[0] == date('Y-m-d') && $days[1] == date('Y-m-d')){
+
+            $detail_events   = $this->events_presents($days);
+
+        }else if($days[0] != date('Y-m-d') && $days[1] != date('Y-m-d')){
+
+            $detail_events   = $this->events_history($days);
+        }else{
+
+            $events_presents = $this->events_presents($days);
+            $events_history  = $this->events_history($days);
+            $detail_events   = array_merge($events_presents, $events_history);
+            //dd($detail_events);
+        }
+
 
         return $detail_events;
     }
 
-    protected function format_datatable($arrays){
-        $format_datatable  = Datatables::of($arrays)->make(true);
-        return $format_datatable;
+
+    /**
+     * [events_presents description]
+     * @return [type] [description]
+     */
+    protected function events_presents ($days){
+        $events_presents  = DetalleEventos::Select('user_id','evento_id','fecha_evento','observaciones')
+                            ->with('evento','user')
+                            ->filtro_days($days)
+                            ->OrderBy(DB::raw('user_id'), 'asc')
+                            ->OrderBy(DB::raw('DATE(fecha_evento)'), 'asc')
+                            ->OrderBy(DB::raw('TIME(fecha_evento)'), 'asc')
+                            ->get()
+                            ->toArray();
+        return $events_presents;
+    } 
+
+    protected function events_history($days){
+        $events_history  = DetalleEventosHistory::Select('user_id','evento_id','fecha_evento','observaciones')
+                            ->with('evento','user')
+                            ->filtro_days($days)
+                            ->OrderBy(DB::raw('user_id'), 'asc')
+                            ->OrderBy(DB::raw('DATE(fecha_evento)'), 'asc')
+                            ->OrderBy(DB::raw('TIME(fecha_evento)'), 'asc')
+                            ->get()
+                            ->toArray();
+        return $events_history;
     }
 
+    /**
+     * [convertCollection Función que permite pasar de un Array a Collection]
+     * @param  [array]      $array [Datos con la información de Event Details]
+     * @return [colection]         [Collection con los datos de Event Details]
+     */
     function convertCollection($array){
 
         $objCollection = New Collector();
@@ -251,4 +214,73 @@ class EventsAgentController extends CosapiController
         return $objCollection;
     }
 
+
+    /**
+     * [builderview Función que prepara los datos para el envío de Detail Events]
+     * @param  [array] $detail_events [Array con datos de la consulta a la base de datos]
+     * @return [array]                [Array con los datos modificados para la vista]
+     */
+    protected function builderview ($detail_events){
+        $array_detail = [];
+        $posicion = 0;
+        foreach($detail_events as $events){
+            $array_detail[$posicion]['NOMBRE COMPLETO']   = $events['full_name_user'];
+            $array_detail[$posicion]['FECHA']             = $this->MostrarSoloFecha($events['fecha_evento']);
+            $array_detail[$posicion]['HORA']              = $this->MostrarSoloHora($events['fecha_evento']);
+            $array_detail[$posicion]['NOMBRE DEL EVENTO'] = $events['name_evento'];
+            $array_detail[$posicion]['REALIZADO POR']     = $events['accion'];
+            $posicion++;
+        }
+
+        return $array_detail;
+    }
+
+
+    /**
+     * [export_csv Function que retorna la ubicación de los datos a exportar en CSV]
+     * @param  [string] $days [Fecha de la consulta]
+     * @return [array]        [Array con la ubicación donde se a guardado el archivo exportado en CSV]
+     */
+    protected function export_csv($days){
+            $days                   = explode(' - ',$days);
+
+            $builderview = $this->builderview(detailEvents($this->query_events($days)));
+            $this->BuilderExport($builderview,'detail_events','csv','exports');
+
+
+        $data = [
+            'succes'    => true,
+            'path'      => [
+                'http://'.$_SERVER['HTTP_HOST'].'/exports/detail_events.csv'
+            ]
+        ];
+
+        return $data;
+    }
+
+
+    /**
+     * [export_excel Function que retorna la ubicación de los datos a exportar en Excel]
+     * @param  [string] $days [Fecha de la consulta]
+     * @return [array]        [Array con la ubicación donde se a guardado el archivo exportado en Excel]
+     */
+    protected function export_excel($days){
+        $days                   = explode(' - ',$days);
+        Excel::create('detail_events', function($excel) use($days) {
+
+
+            $excel->sheet('Detail Events', function($sheet) use($days) {
+                $sheet->fromArray($this->builderview(detailEvents($this->query_events($days))));
+            });
+
+
+        })->store('xlsx','exports');
+
+        $data = [
+            'succes'    => true,
+            'path'      => ['http://'.$_SERVER['HTTP_HOST'].'/exports/detail_events.xlsx']
+        ];
+
+        return $data;
+    }
 }

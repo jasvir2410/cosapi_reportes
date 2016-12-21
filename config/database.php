@@ -73,7 +73,6 @@ return [
             'prefix'    => '',
             'strict'    => false,
         ],
-
         'queuelog' => [
             'driver'    => 'mysql',
             'host'      => env('QUEUELOG_HOST', 'localhost'),

@@ -8,7 +8,7 @@ use DB;
 class Cdr extends Model
 {
     protected $connection   = 'cdr_asterisk';
-    protected $table        = 'cdr';
+    protected $table        = 'cdr_empresas';
     /*protected $connection   = 'cdr_asterisk';
     protected $table        = 'cdr';*/
 

@@ -105,12 +105,13 @@ function ordernarArrayAsociativo($array){
         $new_array[$i] =  array_values($array[$i]);
     }
     return $new_array;
+
 }
 
 
 function calcularTiempoEntreEstados($usuarios,$eventos,$detalleEventos){
-    
-    $resumenEventos =array();
+   
+    $resumenEventos = array();
     $totalLogueado=0;
     foreach ($usuarios as $key => $usuario) {
         foreach ($eventos as $key => $evento) {
@@ -119,14 +120,19 @@ function calcularTiempoEntreEstados($usuarios,$eventos,$detalleEventos){
 
     }
 
+
+
     foreach ($usuarios as $key => $usuario) {
         $user_id = $usuario['id'];
+
         $filtroEventos[$user_id]   =  array_filter($detalleEventos,
             function($v) use ($user_id) {
-                return $v['user_id'] === intval($user_id);
+                return $v['user_id'] == $user_id;
             }
         );
     }
+
+
 
     $filtroEventos=ordernarArrayAsociativo($filtroEventos);
 
@@ -145,6 +151,8 @@ function calcularTiempoEntreEstados($usuarios,$eventos,$detalleEventos){
                 if ($b == $totalRegistros){
                     $user_id             = $filtroEventos[$a][$b-1]['user_id'];
                     $evento_id_anterior  = $filtroEventos[$a][$b-1]['evento_id'];
+                    //$evento_id_actual    = $filtroEventos[$a][$b-1]['evento_id'];
+
                     $fechaInicial        = $filtroEventos[$a][$b-1]['fecha_evento'];
 
                     /**
@@ -172,6 +180,7 @@ function calcularTiempoEntreEstados($usuarios,$eventos,$detalleEventos){
 
                         $user_id             = $filtroEventos[$a][$b-1]['user_id'];
                         $evento_id_anterior  = $filtroEventos[$a][$b-1]['evento_id'];
+                        //$evento_id_actual    = $filtroEventos[$a][$b]['evento_id'];
                         $fechaInicial        = $filtroEventos[$a][$b-1]['fecha_evento'];
                         $fechaFinal          = $filtroEventos[$a][$b]['fecha_evento'];
                         $cantidad            = 1;
@@ -213,7 +222,7 @@ function calcularTiempoEntreEstados($usuarios,$eventos,$detalleEventos){
                      * Hora Inicio  23:00:00
                      * Hora Fin     06:00:00 del dia siguiente
                      */
-                    if ($evento_id_anterior == '1'){
+                    if ($evento_id_anterior == '2'){
 
                         $tiempoTranscurrido   = calcularTiempoTrasnc($fechaInicial,$soloFechaInicial.' 24:00:00');
                         $tiempoTranscurrido  += calcularTiempoTrasnc($soloFechaFinal.' 00:00:00',$fechaFinal);
@@ -383,17 +392,17 @@ function deletearray($value, $column, $array) {
  * [listHours Función para listar horas segun el parametro enviado.]
  * @return [Array] [Lista de horas creadas segun el parametro enviado]
  */
-function listHoursInterval()
-    {
-        
-        $array_hours = [];
-        for($hour = 0; $hour<24; $hour ++){
-            array_push($array_hours, ["hourmod" => ceroIzquierda($hour).':00', 'name' => ceroIzquierda($hour).':00 - '.ceroIzquierda($hour).':30' ]);
-            array_push($array_hours, ["hourmod" => ceroIzquierda($hour).':30', 'name' => ceroIzquierda($hour).':30 - '.ceroIzquierda($hour + 1).':00']);
-        }
-
-        return $array_hours;
+function listHoursInterval(){
+    
+    $array_hours = [];
+    for($hour = 0; $hour<24; $hour ++){
+        array_push($array_hours, ["hourmod" => ceroIzquierda($hour).':00', 'name' => ceroIzquierda($hour).':00 - '.ceroIzquierda($hour).':30' ]);
+        array_push($array_hours, ["hourmod" => ceroIzquierda($hour).':30', 'name' => ceroIzquierda($hour).':30 - '.ceroIzquierda($hour + 1).':00']);
     }
+
+    return $array_hours;
+}
+
 
 function detailEvents($detalleEventos){
 
@@ -415,6 +424,116 @@ function detailEvents($detalleEventos){
     }
 
     return $detailEvents;
+}
+
+/**
+ * [dayweek Función que obtiene el primer y ultimo día de la semana]
+ */
+function dayweek(){
+    $year  = date('Y');
+    $month = date('m');
+    $day   = date('d');
+   
+    # Obtenemos el día de la semana de la fecha dada
+    $diaSemana = date("w",mktime(0,0,0,$month,$day,$year));
+   
+    # el 0 equivale al domingo...
+    if($diaSemana == 0){
+        $diaSemana = 7;
+    } 
+    # A la fecha recibida, le restamos el dia de la semana y obtendremos el lunes
+    $primerDia  = date("Y-m-d",mktime(0,0,0,$month,$day-$diaSemana+1,$year));
+   
+    # A la fecha recibida, le sumamos el dia de la semana menos siete y obtendremos el domingo
+    $ultimoDia  = date("Y-m-d",mktime(0,0,0,$month,$day+(7-$diaSemana),$year));
+
+    return array($primerDia, $ultimoDia);
+}
+
+
+/**
+ * [daymonth Función que obtiene el primer y ultimo día del mes]
+ */
+function daymonth(){
+    $month     = date('m');
+    $year      = date('Y');
+    $day       = date("d", mktime(0,0,0, $month+1, 0, $year));      
+    $primerDia = date('Y-m-d', mktime(0,0,0, $month, 1, $year));
+    $ultimoDia = date('Y-m-d', mktime(0,0,0, $month, $day, $year));
+
+    return array($primerDia, $ultimoDia);
+}
+
+
+/**
+ * [listarentreHoras Función para listar horas existentre entre un rango de horas cada 30 minutos]
+ * @param  [string] $hour_ini [Hora incial en rangos de 30 minutos, Ejem: 02:00 , 18:30]
+ * @param  [string] $hour_fin [Hora final en rangos de 30 minutos, Ejem: 02:00 , 18:30]
+ * @return [array]            [Horas existentes dentro del rango]
+ */
+function listarentreHoras($hour_ini, $hour_fin){
+
+    $array_hourini = explode(':',$hour_ini);
+    $hour_secondini = $array_hourini[0] * 3600;
+    $minute_secondini = $array_hourini[1]*60;
+    $secondini = $hour_secondini +$minute_secondini;
+
+    $array_hourfin = explode(':',$hour_fin);
+    $hour_secondfin = $array_hourfin[0] * 3600;
+    $minute_secondfin = $array_hourfin[1]*60;
+    $secondfin = $hour_secondfin +$minute_secondfin;
+    $hour_faltantes = [];
+    $position=0;
+    do{
+
+        $hour_faltante = ceroIzquierda(intval($secondini/3600));
+        $minute_faltante = ceroIzquierda(intval(($secondini-($hour_faltante*3600))/60));
+        $faltante = $hour_faltante.':'.$minute_faltante;
+
+        $hour_faltantes[$position]['hour'] = $faltante;
+        $secondini = $secondini + 1800;
+        $position ++ ;
+    }while($secondini != $secondfin);
+
+    return $hour_faltantes;
+}
+
+/**
+ * [detect_bronswer Función para detectar el tipo de navegar que esta usando el usuario]
+ * @return [type] [description]
+ */
+
+function detect_bronswer(){
+    $browser=array("IE","OPERA","MOZILLA","NETSCAPE","FIREFOX","SAFARI","CHROME");
+    $os=array("WIN","MAC","LINUX");
+ 
+    # definimos unos valores por defecto para el navegador y el sistema operativo
+    $info['browser'] = "OTHER";
+    $info['os'] = "OTHER";
+ 
+    # buscamos el navegador con su sistema operativo
+    foreach($browser as $parent)
+    {
+        $s = strpos(strtoupper($_SERVER['HTTP_USER_AGENT']), $parent);
+        $f = $s + strlen($parent);
+        $version = substr($_SERVER['HTTP_USER_AGENT'], $f, 15);
+        $version = preg_replace('/[^0-9,.]/','',$version);
+        if ($s)
+        {
+            $info['browser'] = $parent;
+            $info['version'] = $version;
+        }
+    }
+ 
+    # obtenemos el sistema operativo
+    foreach($os as $val)
+    {
+        if (strpos(strtoupper($_SERVER['HTTP_USER_AGENT']),$val)!==false)
+            $info['os'] = $val;
+    }
+ 
+    # devolvemos el array de valores
+    return $info;
 }
 
 ?>

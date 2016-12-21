@@ -9,6 +9,7 @@
                     <th>Date</th>
                     <th>Hour</th>
                     <th>Annexed Origin</th>
+                    <th>Username</th>
                     <th>Number Destination</th>
                     <th>Call Time</th>
                 </tr>

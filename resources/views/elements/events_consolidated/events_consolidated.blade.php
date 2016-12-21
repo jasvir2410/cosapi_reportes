@@ -29,6 +29,7 @@
             </tr>
             <tr>
                 <th >AGENTE</th>
+                <th >LOGIN</th>
                 <th >ACD</th>
                 <th >BREAK</th>
                 <th >SSHH</th>
@@ -44,8 +45,6 @@
                 <th >TIEMPOS AUXILIARES</th>
                 <th >TALK TIME</th>
                 <th >SALIENTE HABLADO</th>
-                <th >NIVEL DE OCUPACION CLARO </th>
-                <th >NIVEL DE OCUPACION COSAPI</th>
             </tr>
         </thead>
     </table>
@@ -79,6 +78,7 @@
             },
             "columns"    : [
                 {"data":"agent"},
+                {"data":"login"},
                 {"data":"acd"},
                 {"data":"break"},
                 {"data":"sshh"},
@@ -93,9 +93,7 @@
                 {"data":"logueado"},
                 {"data":"auxiliares"},
                 {"data":"talk"},
-                {"data":"saliente"},
-                {"data":"ocupation_claro"},
-                {"data":"ocupation_cosapi"}
+                {"data":"saliente"}
             ],
             "paging"            : true,
             "pageLength"        : 100,

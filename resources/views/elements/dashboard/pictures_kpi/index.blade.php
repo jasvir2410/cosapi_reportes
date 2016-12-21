@@ -1,0 +1,5 @@
+@include('elements.dashboard.pictures_kpi.answered')
+@include('elements.dashboard.pictures_kpi.answered_less_15')
+@include('elements.dashboard.pictures_kpi.abandoned')
+@include('elements.dashboard.pictures_kpi.unaswered_less_15')
+@include('elements.dashboard.pictures_kpi.sla_day_15')

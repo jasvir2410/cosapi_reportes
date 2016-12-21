@@ -8,9 +8,7 @@ use DB;
 class AsteriskCDR extends Model
 {
     protected $connection   = 'cdr_asterisk';
-    protected $table        = 'cdr';
-    /*protected $connection   = 'cdr_asterisk';
-    protected $table        = 'cdr';*/
+    protected $table        = 'cdr_empresas';
 
     public function scopeFiltro_days($query,$days)
     {

@@ -28,7 +28,7 @@
             <table id="table-consolidated" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
                 <thead>
                     <tr>
-                        <th>Queue</th>
+                        <th>Name</th>
                         <th>Received</th>
                         <th>Answered</th>
                         <th>Abandoned   </th>
@@ -37,9 +37,11 @@
                         <th>Answ 10s</th>
                         <th>Answ 15s</th>
                         <th>Answ 20s</th>
+                        <th>Answ 30s</th>
                         <th>Aband 10s</th>
                         <th>Aband 15s</th>
                         <th>Aband 20s</th>
+                        <th>Aband 30s</th>
                         <th>Wait Time</th>
                         <th>Talk Time</th>
                         <th>Avg Wait</th>
@@ -49,12 +51,15 @@
                         <th>Ro10%</th>
                         <th>Ro15%</th>
                         <th>Ro20%</th>
+                        <th>Ro30%</th>
                         <th>Ns10%</th>
                         <th>Ns15%</th>
                         <th>Ns20%</th>
+                        <th>Ns30%</th>
                         <th>Avh2 10%</th>
                         <th>Avh2 15%</th>
                         <th>Avh2 20%</th>
+                        <th>Avh2 30%</th>
                     </tr>
                 </thead>
             </table>
