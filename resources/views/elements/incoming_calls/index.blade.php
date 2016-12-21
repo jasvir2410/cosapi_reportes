@@ -5,6 +5,7 @@
 @include('layout.plugins.js-bootstrap3_dialog')
 @include('layout.plugins.js-datepicker')
 @include('layout.plugins.js-dateTables')
+@include('layout.plugins.js-media')
 
 
 

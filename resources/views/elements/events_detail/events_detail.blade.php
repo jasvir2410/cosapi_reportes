@@ -1,6 +1,7 @@
 <div class="panel panel-default">
     <div class="panel-body" >
         <div class="tab-pane fade active in" id="panel-report">
+            @include('filtros.export')
             <table id="table-detail-events" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
                 <thead>
                 <tr>

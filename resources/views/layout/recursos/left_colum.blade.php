@@ -23,6 +23,7 @@
               <ul class="treeview-menu">
                 <li><a href="#" id="events_detail"        class="reportes"><i class="fa fa-circle-o text-blue"></i> Detail Events</a></li>
                 <li><a href="#" id="events_consolidated"  class="reportes"><i class="fa fa-circle-o text-blue"></i> Consolidated Events</a></li>
+                <li><a href="#" id="level_of_occupation"  class="reportes"><i class="fa fa-circle-o text-blue"></i> Level Of Occupation</a></li>
               </ul>
             </li>
             <li>
@@ -31,6 +32,7 @@
               </a>
               <ul class="treeview-menu">
                 <li ><a tabindex="-1" href="#" id="agents_online" class="reportes"><i class="fa fa-circle-o text-red"></i> Agentes Online</a></li>
+                <li><a href="#" id="surveys"          class="reportes"><i class="fa fa-circle-o text-purple"></i> Encuestas</a></li>
                 <li><a href="#" id="incoming_calls"     class="reportes"><i class="fa fa-circle-o text-green"></i> Inbound Calls</a></li>
                 <li><a href="#" id="outgoing_calls"     class="reportes"><i class="fa fa-circle-o text-yellow"></i> Outbound Calls</a></li>
                 <li><a href="#" id="consolidated_calls" class="reportes"><i class="fa fa-circle-o text-blue"></i> Consolidated Calls</a></li>

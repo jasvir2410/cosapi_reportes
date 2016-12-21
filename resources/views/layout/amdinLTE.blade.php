@@ -8,15 +8,15 @@
     <!-- para que la web sea responsive -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.5 -->
-    <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css')}}">
+    {!!Html::style('bootstrap/css/bootstrap.min.css')!!}
     <!-- para los iconos Font Awesome -->
-    <link rel="stylesheet" href="{{ asset('plugins/adminLTE/css/font-awesome.css')}}">
+    {!!Html::style('plugins/adminLTE/css/font-awesome.css')!!}
     <!-- para el css de Adminlte -->
-    <link rel="stylesheet" href="{{ asset('plugins/adminLTE/css/AdminLTE.min.css')}}">
+    {!!Html::style('plugins/adminLTE/css/AdminLTE.min.css')!!}
     <!-- para cambiar el color del panel de adminlte -->
-    <link rel="stylesheet" href="{{ asset('plugins/adminLTE/css/skins/_all-skins.min.css') }}">
+    {!!Html::style('plugins/adminLTE/css/skins/_all-skins.min.css')!!}
     <!-- estilos para la imagen de cargando -->
-    <link rel="stylesheet" href="{{ asset('cosapi/css/preloader.css') }}">
+    {!!Html::style('cosapi/css/preloader.css')!!}
      <!--para incluir otros css-->
      @yield('css')
   </head>
@@ -26,7 +26,7 @@
     <?php
       $crumbs = explode("/",$_SERVER["REQUEST_URI"]);
       foreach($crumbs as $crumb){
-          $d=ucfirst(str_replace(array(".html","_"),array(""," "),$crumb) . ' ');
+          echo $d=ucfirst(str_replace(array(".html","_"),array(""," "),$crumb) . ' ');
       }
     ?>
     <div class="wrapper">
@@ -45,7 +45,7 @@
             </h1>
             <ol class="breadcrumb">
               <li><a href="/"><i class="fa fa-dashboard"></i>Inicio</a></li>
-              
+
               <li class="active" id='urlsistema'></li>
             </ol>
           </section>
@@ -70,21 +70,28 @@
 
     <!--Todos los javascript del layout principal-->
     <!-- jQuery -->
-    <script src="{{ asset('plugins/jQuery/jQuery-2.1.4.min.js')}}"></script>
-    <script src="{{ asset('plugins/jQueryUI/jquery-ui.js')}}"></script>
-    <script src="{{ asset('bootstrap/js/bootstrap.min.js')}}"></script>
-    <script src="{{ asset('extras/bootstrap3-dialog/js/bootstrap-dialog.min.js')}}">  </script>
+    {!!Html::script('plugins/jQuery/jQuery-2.1.4.min.js')!!}
+    {!!Html::script('plugins/jQueryUI/jquery-ui.js')!!}
+    {!!Html::script('bootstrap/js/bootstrap.min.js')!!}
+    {!!Html::script('extras/bootstrap3-dialog/js/bootstrap-dialog.min.js')!!}
+    {!!Html::script('plugins/adminLTE/js/app.min.js')!!}
+    {!!Html::script('plugins/adminLTE/js/funcionalidades.js')!!}
 
-    <!-- Estilo del  AminLTE -->
-    <script>
+    <script type="text/javascript">
       var AdminLTEOptions = {
         sidebarExpandOnHover: true,
         enableBSToppltip: true
       };
+
+      $(document).ready(function() {
+          $.ajaxSetup({
+              headers: {
+                  'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+              }
+          });
+      } );
+
     </script>
-    <script src="{{ asset('plugins/adminLTE/js/app.min.js')}}"></script>
-    <script src="{{ asset('plugins/adminLTE/js/funcionalidades.js')}}"></script>
-    <!--para incluir todos los demas script que se necesite-->
     @yield('scripts')
   </body>
 </html>

@@ -31,6 +31,7 @@
                     <th>Duration</th>
                     <th>Action</th>
                     <th>Wait Time</th>
+                    <th>Audio</th>
                 </tr>
                 </thead>
             </table>
@@ -41,6 +42,7 @@
 <script type="text/javascript">
     $(document).ready(function(){
         prueba();
+        $('.media').media();
         
     })
 

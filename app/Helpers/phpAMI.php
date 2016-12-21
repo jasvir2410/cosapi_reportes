@@ -84,7 +84,7 @@ class phpAMI{
      * @param string $host Host a conertar
      * @param string $port Puerto a conectar
      */
-    function __construct($username="admin",$password="admin",$host="192.168.222.128",$port="5038"){
+    function __construct($username="admin",$password="admin",$host="",$port="5038"){
         if($username != '' and $password != ''){
             $this->USER=$username;
             $this->SECRET=$password;
@@ -115,7 +115,10 @@ class phpAMI{
      * 		[Message] => Authentication failed
      * )
      */
-    function login(){
+    function login($hostAsterisk){
+        // Asignar IP del Servidor a funcion private de la Class PHPMAI
+        $this->SERVER = $hostAsterisk;
+
         if($this->openSock()){
             $this->send("Login",array("Username"=>$this->USER,"Secret"=>$this->SECRET));
             $response=$this->readEnd();
@@ -1065,17 +1068,21 @@ class phpAMI{
      * )
      */
     function queueStatus($queue=null,$member=null){
+
         if(!is_null($queue)){
             $arg["Queue"]=$queue;
         }
+
         if(!is_null($member)){
             $arg["Member"]=$member;
         }
+
         if(isset($arg)){
             $this->send("queueStatus",$arg);
         }else{
             $this->send("queueStatus");
         }
+
         $responce=$this->readEnd();
         if($responce["Response"]=="Success"){
             $reg=$responce;
@@ -1891,7 +1898,7 @@ class phpAMI{
         $buf="";
         do{
             $saltar=false;
-            $buf=trim(fgets($this->SOCK, 50));
+            $buf=trim(fgets($this->SOCK, 55));
 
             if($buf=="" and count($buffer)==0){
                 $buf="a";

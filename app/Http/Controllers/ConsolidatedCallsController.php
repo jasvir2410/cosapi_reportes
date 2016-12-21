@@ -14,6 +14,12 @@ use Excel;
 class ConsolidatedCallsController extends CosapiController
 {
 
+
+    /**
+     * [index Función que retorna vista y datos del reporte de Calls Consolidated]
+     * @param  Request $request  [Retorna datos por POST]
+     * @return [view]            [Retorna una vista o array para cargar en el reporte]
+     */
     public function index(Request $request)
     {
         if ($request->ajax()){
@@ -25,11 +31,24 @@ class ConsolidatedCallsController extends CosapiController
         }
     }
 
+
+    /**
+     * [export Función que llama a otra función para exportar en el formato que se desea]
+     * @param  Request $request [Variables para la recepción de datos por POST]
+     * @return [array]          [Retornar archivo de exportación]
+     */
     public function export(Request $request){
         $export_contestated  = call_user_func_array([$this,'export_'.$request->format_export], [$request->days]);
         return $export_contestated;
     }
 
+
+    /**
+     * [calls_consolidated Función para el proceso de consulta de datos]
+     * @param  [date]   $fecha_evento [Fecha de consulta]
+     * @param  [string] $evento       [Tipo de consulta: Skill, fecha, hora, agente]
+     * @return [array]                [Datos a cargar en la tabla del reporte de Calls Consolidated]
+     */
     protected function calls_consolidated($fecha_evento, $evento)
     {
                 
@@ -42,6 +61,12 @@ class ConsolidatedCallsController extends CosapiController
     }
 
 
+    /**
+     * [calls_inbound Función que retorna los datos segun el evento (Skill, Date, Hour, Agent)]
+     * @param  [date]   $fecha_evento [Fecha de consulta]
+     * @param  [string] $evento       [Tipo de consulta: Skill, fecha, hora, agente]
+     * @return [array]                [Retorna datos segun el tipo Calls Consolidated que se requiera]
+     */
     protected function calls_inbound($fecha_evento, $evento)
     {
         $groupby                            = '';
@@ -74,16 +99,17 @@ class ConsolidatedCallsController extends CosapiController
 
 
     /**
-     * [query_calls_inbound description]
-     * @param  [type] $days [description]
-     * @return [type]       [description]
+     * [query_calls_inbound Función que retorna los datos de la llamadas entrantes]
+     * @param  [date] $days  [Fecha de consulta]
+     * @return [array]       [Retorna datos de las llamadas entrantes en determinada fecha]
      */
     protected function query_calls_inbound ($fecha_evento)
     {
         $days               = explode(' - ', $fecha_evento);
         $calls_inbound      = Queue_empresa::select_fechamod()
                                         ->filtro_days($days)
-                                        ->whereNotIn('queue', ['NONE','HD_CE_BackOffice','Pruebas'])
+                                        ->filtro_anexos()
+                                        ->whereNotIn('queue', ['NONE','HD_CE_BackOffice','Pruebas','HD_CE_Calidad'])
                                         ->OrderBy('id')
                                         ->get()
                                         ->toArray();                         
@@ -93,14 +119,16 @@ class ConsolidatedCallsController extends CosapiController
 
     /**
      * [calls_queue Función la cual permite obtener la lista de nombre de los Skills]
-     * @return [Array] [Retorna un Array con la lista de nombre de los Skills]
+     * @param  [date] $days  [Fecha de consulta]
+     * @return [Array]       [Retorna un Array con la lista de nombre de los Skills]
      */
     protected function calls_queue ($fecha_evento)
     {
         $days           = explode(' - ', $fecha_evento);
         $calls_queue    = Queue_empresa::Select('queue')
                                     ->filtro_days($days)
-                                    ->whereNotIn('queue', ['NONE','HD_CE_BackOffice','Pruebas'])
+                                    ->filtro_anexos()
+                                    ->whereNotIn('queue', ['NONE','HD_CE_BackOffice','Pruebas','HD_CE_Calidad'])
                                     ->groupBy('queue')
                                     ->get()
                                     ->toArray();
@@ -108,14 +136,19 @@ class ConsolidatedCallsController extends CosapiController
         return $calls_queue;
     }
 
-    
+    /**
+     * [calls_agents Función la cual permite obtener la lista de nombre de los Agentes]
+     * @param  [date] $days  [Fecha de consulta]
+     * @return [Array]       [Retorna un Array con la lista de nombre de los Agentes]
+     */
     protected function calls_agents ($fecha_evento)
     {
         $days           = explode(' - ', $fecha_evento);
         $calls_agents   = Queue_empresa::Select('agent')
                                     ->filtro_days($days)
+                                    ->filtro_anexos()
                                     ->whereNotIn('agent', ['NONE'])
-                                    ->whereNotIn('queue', ['Pruebas','NONE','HD_CE_BackOffice'])
+                                    ->whereNotIn('queue', ['NONE','HD_CE_BackOffice','Pruebas','HD_CE_Calidad'])
                                     ->groupBy('agent')
                                     ->get()
                                     ->toArray();
@@ -126,13 +159,13 @@ class ConsolidatedCallsController extends CosapiController
     
     /**
      * [ListCallsConsolidated Función que permite obtener los datos del consolidado de llamadas]
-     * @param  [Array] $calls_consolidated [Array con toda la información de las llamadas en una determinada fecha]
-     * @param  [String] $indice            [Nombre de la columna por las cual va a agrupar]
-     * @return [Array]                     [Array con los datos del consolidados de llamdas]
+     * @param  [Array]  $calls_consolidated [Array con toda la información de las llamadas en una determinada fecha]
+     * @param  [String] $indice             [Nombre de la columna por las cual va a agrupar]
+     * @return [Array]                      [Array con los datos del consolidados de llamdas]
      */
     protected function CallsConsolidated($calls_inbound,$groupby){
 
-        $time_standar = array(10,15,20);
+        $time_standar = array(10,15,20,30);
         $Consolidated = [];
         foreach ($calls_inbound as $calls) {
             
@@ -143,28 +176,28 @@ class ConsolidatedCallsController extends CosapiController
 
                     if(isset($Consolidated[$calls[$groupby]]['min_espera'])){
 
-                            $Consolidated[$calls[$groupby]]['min_espera']=$calls['info1']+$Consolidated[$calls[$groupby]]['min_espera'];
+                            $Consolidated[$calls[$groupby]]['min_espera']=abs($calls['info1'])+$Consolidated[$calls[$groupby]]['min_espera'];
 
                     }else{
 
-                        $Consolidated[$calls[$groupby]]['min_espera']=$calls['info1'];
+                        $Consolidated[$calls[$groupby]]['min_espera']=abs($calls['info1']);
 
                     }
 
                     if(isset($Consolidated[$calls[$groupby]]['duracion'])){
 
-                        $Consolidated[$calls[$groupby]]['duracion']=$calls['info2']+$Consolidated[$calls[$groupby]]['duracion'];
+                        $Consolidated[$calls[$groupby]]['duracion']=abs($calls['info2'])+$Consolidated[$calls[$groupby]]['duracion'];
 
                     }else{
 
-                        $Consolidated[$calls[$groupby]]['duracion']=$calls['info2'];
+                        $Consolidated[$calls[$groupby]]['duracion']=abs($calls['info2']);
 
                     }
 
 
                     for($i=0;$i<count($time_standar);$i++){
 
-                        if($calls['info1']<=$time_standar[$i]){
+                        if(abs($calls['info1'])<=$time_standar[$i]){
 
                             /*
                              * Contador de tiempo en cola < 10 y < 20
@@ -188,18 +221,18 @@ class ConsolidatedCallsController extends CosapiController
 
                     if(isset($Consolidated[$calls[$groupby]]['min_espera'])){
 
-                        $Consolidated[$calls[$groupby]]['min_espera']=$calls['info1']+$Consolidated[$calls[$groupby]]['min_espera'];
+                        $Consolidated[$calls[$groupby]]['min_espera']=abs($calls['info1'])+$Consolidated[$calls[$groupby]]['min_espera'];
 
                     }else{
-                        $Consolidated[$calls[$groupby]]['min_espera']=$calls['info1'];
+                        $Consolidated[$calls[$groupby]]['min_espera']=abs($calls['info1']);
                     }
 
                     if(isset($Consolidated[$calls[$groupby]]['duracion'])){
 
-                        $Consolidated[$calls[$groupby]]['duracion']=$calls['info2']+$Consolidated[$calls[$groupby]]['duracion'];
+                        $Consolidated[$calls[$groupby]]['duracion']=abs($calls['info2'])+$Consolidated[$calls[$groupby]]['duracion'];
 
                     }else{
-                        $Consolidated[$calls[$groupby]]['duracion']=$calls['info2'];
+                        $Consolidated[$calls[$groupby]]['duracion']=abs($calls['info2']);
                     }
                     
                     for($i=0;$i<count($time_standar);$i++){
@@ -208,7 +241,7 @@ class ConsolidatedCallsController extends CosapiController
                          * Contador de tiempo en cola < 10 y < 20
                          */
 
-                        if($calls['info1']<=$time_standar[$i]){
+                        if(abs($calls['info1'])<=$time_standar[$i]){
                           
                             $Consolidated[$calls[$groupby]][$calls['event'].$time_standar[$i]]=1;
                             
@@ -237,11 +270,11 @@ class ConsolidatedCallsController extends CosapiController
      * @param  [Array]  $indice                     [Dato que define la columan que servira para agrupar]
      * @param  [Array]  $calls_queue                [Lista de nombres de Skill]
      */
-    protected function BuilderCallsConsolidated($CallsConsolidated ,$call_group,$groupby,$list_user=''){
+protected function BuilderCallsConsolidated($CallsConsolidated ,$call_group,$groupby,$list_user=''){
 
         $time_standar       = array(10,20);
         $posicion           = 1;
-        $Consolidateds = [];
+        $Consolidateds      = [];
         for($j=0;$j<count($call_group);$j++){
 
             $complete_caller        =   0;
@@ -253,16 +286,20 @@ class ConsolidatedCallsController extends CosapiController
             $completecaller_15      =   0;
             $completeagent_15       =   0;
             $completecaller_20      =   0;
+            $completecaller_30      =   0;
             $completeagent_20       =   0;
+            $completeagent_30       =   0;
             $min_espera             =   0;
             $duracion               =   0;
             $abandon                =   0;
             $abandon_10             =   0;
             $abandon_15             =   0;
             $abandon_20             =   0;
+            $abandon_30             =   0;
             $transfer_10            =   0;
             $transfer_15            =   0;
             $transfer_20            =   0;
+            $transfer_30            =   0;
 
 
             if(isset($CallsConsolidated[$call_group[$j][$groupby]])){
@@ -274,15 +311,19 @@ class ConsolidatedCallsController extends CosapiController
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER10'])){ $completecaller_10   =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER10']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER15'])){ $completecaller_15   =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER15']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER20'])){ $completecaller_20   =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER20']); }
+                if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER30'])){ $completecaller_30   =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETECALLER30']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT10'])){  $completeagent_10    =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT10']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT15'])){  $completeagent_15    =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT15']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT20'])){  $completeagent_20    =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT20']); }
+                if(isset($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT30'])){  $completeagent_30    =   intval($CallsConsolidated[$call_group[$j][$groupby]]['COMPLETEAGENT30']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON10'])){        $abandon_10          =   intval($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON10']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON15'])){        $abandon_15          =   intval($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON15']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON20'])){        $abandon_20          =   intval($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON20']); }
+                if(isset($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON30'])){        $abandon_30          =   intval($CallsConsolidated[$call_group[$j][$groupby]]['ABANDON30']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER10'])){       $transfer_10         =   intval($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER10']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER15'])){       $transfer_15         =   intval($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER15']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER20'])){       $transfer_20         =   intval($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER20']); }
+                if(isset($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER30'])){       $transfer_30         =   intval($CallsConsolidated[$call_group[$j][$groupby]]['TRANSFER30']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['min_espera'])){       $min_espera          =   intval($CallsConsolidated[$call_group[$j][$groupby]]['min_espera']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['duracion'])){         $duracion            =   intval($CallsConsolidated[$call_group[$j][$groupby]]['duracion']); }
                 if(isset($CallsConsolidated[$call_group[$j][$groupby]]['name'])){             $name                =   $CallsConsolidated[$call_group[$j][$groupby]]['name']; }
@@ -296,97 +337,118 @@ class ConsolidatedCallsController extends CosapiController
                     $name =   ExtraerAgente($name,$list_user);
                 }
 
-                $Consolidateds[$posicion]['name']                                                                  =   $name; 
-                $Consolidateds[$posicion]['recibidas']                                                             =   $complete_caller + $complete_agent + $abandon + $transfer;
-                $Consolidateds[$posicion]['atendidas']                                                             =   $complete_caller + $complete_agent;
-                $Consolidateds[$posicion]['abandonados']                                                           =   $abandon;
-                $Consolidateds[$posicion]['transferencias']                                                        =   $transfer;
-                $Consolidateds[$posicion]['constestadas']                                                          =   $complete_caller + $complete_agent + $transfer;
-                $Consolidateds[$posicion]['constestadas_10']                                                       =   $completecaller_10 + $completeagent_10 + $transfer_10;
-                $Consolidateds[$posicion]['constestadas_15']                                                       =   $completecaller_15 + $completeagent_15 + $transfer_15;
-                $Consolidateds[$posicion]['constestadas_20']                                                       =   $completecaller_20 + $completeagent_20 + $transfer_20;
-                $Consolidateds[$posicion]['abandonadas_10']                                                        =   $abandon_10 ;
-                $Consolidateds[$posicion]['abandonadas_15']                                                        =   $abandon_15 ;
-                $Consolidateds[$posicion]['abandonadas_20']                                                        =   $abandon_20 ;
-                $Consolidateds[$posicion]['min_espera']                                                            =   conversorSegundosHoras($min_espera,false) ;
-                $Consolidateds[$posicion]['duracion']                                                              =   conversorSegundosHoras($duracion,false) ;
+                $Consolidateds[$posicion]['Name']                                                           =   $name; 
+                $Consolidateds[$posicion]['Received']                                                       =   $complete_caller + $complete_agent + $abandon + $transfer;
+                $Consolidateds[$posicion]['Answered']                                                       =   $complete_caller + $complete_agent;
+                $Consolidateds[$posicion]['Abandoned']                                                      =   $abandon;
+                $Consolidateds[$posicion]['Transferred']                                                    =   $transfer;
+                $Consolidateds[$posicion]['Attended']                                                       =   $complete_caller + $complete_agent + $transfer;
+                $Consolidateds[$posicion]['Answ 10s']                                                       =   $completecaller_10 + $completeagent_10 + $transfer_10;
+                $Consolidateds[$posicion]['Answ 15s']                                                       =   $completecaller_15 + $completeagent_15 + $transfer_15;
+                $Consolidateds[$posicion]['Answ 20s']                                                       =   $completecaller_20 + $completeagent_20 + $transfer_20;
+                $Consolidateds[$posicion]['Answ 30s']                                                       =   $completecaller_30 + $completeagent_30 + $transfer_30;
+                $Consolidateds[$posicion]['Aband 10s']                                                      =   $abandon_10 ;
+                $Consolidateds[$posicion]['Aband 15s']                                                      =   $abandon_15 ;
+                $Consolidateds[$posicion]['Aband 20s']                                                      =   $abandon_20 ;
+                $Consolidateds[$posicion]['Aband 30s']                                                      =   $abandon_30 ;
+                $Consolidateds[$posicion]['Wait Time']                                                      =   conversorSegundosHoras($min_espera,false) ;
+                $Consolidateds[$posicion]['Talk Time']                                                      =   conversorSegundosHoras($duracion,false) ;
 
-                if($Consolidateds[$posicion]['recibidas']!=0){
-                    $Consolidateds[$posicion]['answ']   =   convertDecimales(($Consolidateds[$posicion]['atendidas']/ $Consolidateds[$posicion]['recibidas'] )*100,2);
+
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Answ']   =   convertDecimales(($Consolidateds[$posicion]['Answered']/ $Consolidateds[$posicion]['Received'] )*100,2);
                 }else{
-                    $Consolidateds[$posicion]['answ']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Answ']   = convertDecimales(0,2);
                 }
                 
-                if($Consolidateds[$posicion]['recibidas']!=0){
-                    $Consolidateds[$posicion]['unansw'] =   convertDecimales((($Consolidateds[$posicion]['abandonados'] )/ $Consolidateds[$posicion]['recibidas'] )*100,2);
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Unansw'] =   convertDecimales((($Consolidateds[$posicion]['Abandoned'] )/ $Consolidateds[$posicion]['Received'] )*100,2);
                 }else{
-                    $Consolidateds[$posicion]['unansw']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Unansw']   = convertDecimales(0,2);
                 }
 
-                if($Consolidateds[$posicion]['recibidas']!=0){
-                    $Consolidateds[$posicion]['avgw']   =   conversorSegundosHoras(intval($min_espera/$Consolidateds[$posicion]['recibidas']),false);
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Avg Wait']   =   conversorSegundosHoras(intval($min_espera/$Consolidateds[$posicion]['Received']),false);
                 }else{
-                    $Consolidateds[$posicion]['avgw']   = conversorSegundosHoras(0,false);
+                    $Consolidateds[$posicion]['Avg Wait']   = conversorSegundosHoras(0,false);
                 }
 
-                if($Consolidateds[$posicion]['constestadas']!=0){
-                    $Consolidateds[$posicion]['avgt']   =   conversorSegundosHoras(intval($duracion/$Consolidateds[$posicion]['constestadas']),false);
+                if($Consolidateds[$posicion]['Attended']!=0){
+                    $Consolidateds[$posicion]['Avg Talk']   =   conversorSegundosHoras(intval($duracion/$Consolidateds[$posicion]['Attended']),false);
                 }else{
-                    $Consolidateds[$posicion]['avgt']   = conversorSegundosHoras(0,false);
+                    $Consolidateds[$posicion]['Avg Talk']   = conversorSegundosHoras(0,false);
                 }
 
-                if($Consolidateds[$posicion]['recibidas']!=0){
-                    $Consolidateds[$posicion]['ro10']   =   convertDecimales((($Consolidateds[$posicion]['constestadas_10']+$Consolidateds[$posicion]['abandonadas_10'])/$Consolidateds[$posicion]['recibidas'])*100,2);
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Ro10']   =   convertDecimales((($Consolidateds[$posicion]['Answ 10s']+$Consolidateds[$posicion]['Aband 10s'])/$Consolidateds[$posicion]['Received'])*100,2);
                 }else{
-                    $Consolidateds[$posicion]['ro10']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Ro10']   = convertDecimales(0,2);
                 }
 
-                if($Consolidateds[$posicion]['recibidas']!=0){
-                    $Consolidateds[$posicion]['ro15']   =   convertDecimales((($Consolidateds[$posicion]['constestadas_15']+$Consolidateds[$posicion]['abandonadas_15'])/$Consolidateds[$posicion]['recibidas'])*100,2);
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Ro15']   =   convertDecimales((($Consolidateds[$posicion]['Answ 15s']+$Consolidateds[$posicion]['Aband 15s'])/$Consolidateds[$posicion]['Received'])*100,2);
                 }else{
-                    $Consolidateds[$posicion]['ro15']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Ro15']   = convertDecimales(0,2);
                 }
 
-                if($Consolidateds[$posicion]['recibidas']!=0){
-                    $Consolidateds[$posicion]['ro20']   =   convertDecimales((($Consolidateds[$posicion]['constestadas_20']+$Consolidateds[$posicion]['abandonadas_20'])/$Consolidateds[$posicion]['recibidas'])*100,2);
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Ro20']   =   convertDecimales((($Consolidateds[$posicion]['Answ 20s']+$Consolidateds[$posicion]['Aband 20s'])/$Consolidateds[$posicion]['Received'])*100,2);
                 }else{
-                    $Consolidateds[$posicion]['ro20']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Ro20']   = convertDecimales(0,2);
                 }
 
-                if($Consolidateds[$posicion]['recibidas']!=0){
-                    $Consolidateds[$posicion]['ns10']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_10']/$Consolidateds[$posicion]['recibidas'])*100,2);
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Ro30']   =   convertDecimales((($Consolidateds[$posicion]['Answ 30s']+$Consolidateds[$posicion]['Aband 30s'])/$Consolidateds[$posicion]['Received'])*100,2);
                 }else{
-                    $Consolidateds[$posicion]['ns10']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Ro30']   = convertDecimales(0,2);
                 }
 
-                if($Consolidateds[$posicion]['recibidas']!=0){
-                    $Consolidateds[$posicion]['ns15']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_15']/$Consolidateds[$posicion]['recibidas'])*100,2);
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Ns10']   =   convertDecimales(($Consolidateds[$posicion]['Answ 10s']/$Consolidateds[$posicion]['Received'])*100,2);
                 }else{
-                    $Consolidateds[$posicion]['ns15']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Ns10']   = convertDecimales(0,2);
                 }
 
-                if($Consolidateds[$posicion]['recibidas']!=0){
-                    $Consolidateds[$posicion]['ns20']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_20']/$Consolidateds[$posicion]['recibidas'])*100,2);
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Ns15']   =   convertDecimales(($Consolidateds[$posicion]['Answ 15s']/$Consolidateds[$posicion]['Received'])*100,2);
                 }else{
-                    $Consolidateds[$posicion]['ns20']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Ns15']   = convertDecimales(0,2);
                 }
 
-                if($Consolidateds[$posicion]['constestadas'] !=0){
-                    $Consolidateds[$posicion]['avh210']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_10']/$Consolidateds[$posicion]['constestadas'] )*100,2);
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Ns20']   =   convertDecimales(($Consolidateds[$posicion]['Answ 20s']/$Consolidateds[$posicion]['Received'])*100,2);
                 }else{
-                    $Consolidateds[$posicion]['avh210']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Ns20']   = convertDecimales(0,2);
                 }
 
-                if($Consolidateds[$posicion]['constestadas'] !=0){
-                    $Consolidateds[$posicion]['avh215']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_15']/$Consolidateds[$posicion]['constestadas'] )*100,2);
+                if($Consolidateds[$posicion]['Received']!=0){
+                    $Consolidateds[$posicion]['Ns30']   =   convertDecimales(($Consolidateds[$posicion]['Answ 30s']/$Consolidateds[$posicion]['Received'])*100,2);
                 }else{
-                    $Consolidateds[$posicion]['avh215']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Ns30']   = convertDecimales(0,2);
+                }
+
+                if($Consolidateds[$posicion]['Attended'] !=0){
+                    $Consolidateds[$posicion]['Avh2 10']   =   convertDecimales(($Consolidateds[$posicion]['Answ 10s']/$Consolidateds[$posicion]['Attended'] )*100,2);
+                }else{
+                    $Consolidateds[$posicion]['Avh2 10']   = convertDecimales(0,2);
+                }
+
+                if($Consolidateds[$posicion]['Attended'] !=0){
+                    $Consolidateds[$posicion]['Avh2 15']   =   convertDecimales(($Consolidateds[$posicion]['Answ 15s']/$Consolidateds[$posicion]['Attended'] )*100,2);
+                }else{
+                    $Consolidateds[$posicion]['Avh2 15']   = convertDecimales(0,2);
                 } 
 
-                if($Consolidateds[$posicion]['constestadas'] !=0){
-                    $Consolidateds[$posicion]['avh220']   =   convertDecimales(($Consolidateds[$posicion]['constestadas_20']/$Consolidateds[$posicion]['constestadas'] )*100,2);
+                if($Consolidateds[$posicion]['Attended'] !=0){
+                    $Consolidateds[$posicion]['Avh2 20']   =   convertDecimales(($Consolidateds[$posicion]['Answ 20s']/$Consolidateds[$posicion]['Attended'] )*100,2);
                 }else{
-                    $Consolidateds[$posicion]['avh220']   = convertDecimales(0,2);
+                    $Consolidateds[$posicion]['Avh2 20']   = convertDecimales(0,2);
+                } 
+
+                if($Consolidateds[$posicion]['Attended'] !=0){
+                    $Consolidateds[$posicion]['Avh2 30']   =   convertDecimales(($Consolidateds[$posicion]['Answ 30s']/$Consolidateds[$posicion]['Attended'] )*100,2);
+                }else{
+                    $Consolidateds[$posicion]['Avh2 30']   = convertDecimales(0,2);
                 } 
 
 
@@ -398,34 +460,39 @@ class ConsolidatedCallsController extends CosapiController
                     $name = $call_group[$j]['name'];
                 }
 
-                $Consolidateds[$posicion]['name']                                           =   $name;
-                $Consolidateds[$posicion]['recibidas']                                      =   0 ;
-                $Consolidateds[$posicion]['atendidas']                                      =   0 ;
-                $Consolidateds[$posicion]['abandonados']                                    =   0 ;
-                $Consolidateds[$posicion]['transferencias']                                 =   0 ;
-                $Consolidateds[$posicion]['constestadas']                                   =   0 ;
-                $Consolidateds[$posicion]['constestadas_10']                                =   0 ;
-                $Consolidateds[$posicion]['constestadas_15']                                =   0 ;
-                $Consolidateds[$posicion]['constestadas_20']                                =   0 ;
-                $Consolidateds[$posicion]['abandonadas_10']                                 =   0 ;
-                $Consolidateds[$posicion]['abandonadas_15']                                 =   0 ;
-                $Consolidateds[$posicion]['abandonadas_20']                                 =   0 ;
-                $Consolidateds[$posicion]['min_espera']                                     =   conversorSegundosHoras(0,false) ;
-                $Consolidateds[$posicion]['duracion']                                       =   conversorSegundosHoras(0,false) ;
-                $Consolidateds[$posicion]['answ']                                           =   0 ;
-                $Consolidateds[$posicion]['unansw']                                         =   0 ;
-                $Consolidateds[$posicion]['avgw']                                           =   conversorSegundosHoras(0,false) ;
-                $Consolidateds[$posicion]['avgt']                                           =   conversorSegundosHoras(0,false) ;
-                $Consolidateds[$posicion]['ro10']                                           =   0 ;
-                $Consolidateds[$posicion]['ro15']                                           =   0 ;
-                $Consolidateds[$posicion]['ro20']                                           =   0 ;
-                $Consolidateds[$posicion]['ns10']                                           =   0 ;
-                $Consolidateds[$posicion]['ns15']                                           =   0 ;
-                $Consolidateds[$posicion]['ns20']                                           =   0 ;
-                $Consolidateds[$posicion]['avh210']                                         =   0 ;
-                $Consolidateds[$posicion]['avh215']                                         =   0 ;
-                $Consolidateds[$posicion]['avh220']                                         =   0 ;
-                $posicion                               =   $posicion + 1;
+                $Consolidateds[$posicion]['Name']           =   $name;
+                $Consolidateds[$posicion]['Received']       =   0 ;
+                $Consolidateds[$posicion]['Answered']       =   0 ;
+                $Consolidateds[$posicion]['Abandoned']      =   0 ;
+                $Consolidateds[$posicion]['Transferred']    =   0 ;
+                $Consolidateds[$posicion]['Attended']       =   0 ;
+                $Consolidateds[$posicion]['Answ 10s']       =   0 ;
+                $Consolidateds[$posicion]['Answ 15s']       =   0 ;
+                $Consolidateds[$posicion]['Answ 20s']       =   0 ;
+                $Consolidateds[$posicion]['Answ 30s']       =   0 ;
+                $Consolidateds[$posicion]['Aband 10s']      =   0 ;
+                $Consolidateds[$posicion]['Aband 15s']      =   0 ;
+                $Consolidateds[$posicion]['Aband 20s']      =   0 ;
+                $Consolidateds[$posicion]['Aband 30s']      =   0 ;
+                $Consolidateds[$posicion]['Wait Time']      =   conversorSegundosHoras(0,false) ;
+                $Consolidateds[$posicion]['Talk Time']      =   conversorSegundosHoras(0,false) ;
+                $Consolidateds[$posicion]['Answ']           =   0 ;
+                $Consolidateds[$posicion]['Unansw']         =   0 ;
+                $Consolidateds[$posicion]['Avg Wait']       =   conversorSegundosHoras(0,false) ;
+                $Consolidateds[$posicion]['Avg Talk']       =   conversorSegundosHoras(0,false) ;
+                $Consolidateds[$posicion]['Ro10']           =   0 ;
+                $Consolidateds[$posicion]['Ro15']           =   0 ;
+                $Consolidateds[$posicion]['Ro20']           =   0 ;
+                $Consolidateds[$posicion]['Ro30']           =   0 ;
+                $Consolidateds[$posicion]['Ns10']           =   0 ;
+                $Consolidateds[$posicion]['Ns15']           =   0 ;
+                $Consolidateds[$posicion]['Ns20']           =   0 ;
+                $Consolidateds[$posicion]['Ns30']           =   0 ;
+                $Consolidateds[$posicion]['Avh2 10']        =   0 ;
+                $Consolidateds[$posicion]['Avh2 15']        =   0 ;
+                $Consolidateds[$posicion]['Avh2 20']        =   0 ;
+                $Consolidateds[$posicion]['Avh2 30']        =   0 ;
+                $posicion                                   =   $posicion + 1;
             }
         }
 
@@ -435,38 +502,48 @@ class ConsolidatedCallsController extends CosapiController
     }
 
 
+    /**
+     * [consolidatedcollection Función que tranforma un array en collection]
+     * @param  [array]      $BuilderCallsConsolidated [Datos para transforma los datos de array a consolidated]
+     * @return [collection]                           [Datos de llamadas apra el reporte de agentes online]
+     */
     protected function consolidatedcollection($BuilderCallsConsolidated){
 
         $consolidatedcollection                      = new Collector;
         foreach ($BuilderCallsConsolidated as $CallsConsolidated) {
             $consolidatedcollection->push([
-                            'name'              => $CallsConsolidated['name'],
-                            'recibidas'         => $CallsConsolidated['recibidas'],
-                            'atendidas'         => $CallsConsolidated['atendidas'],
-                            'abandonados'       => $CallsConsolidated['abandonados'],
-                            'transferencias'    => $CallsConsolidated['transferencias'],
-                            'constestadas'      => $CallsConsolidated['constestadas'],
-                            'constestadas_10'   => $CallsConsolidated['constestadas_10'],
-                            'constestadas_15'   => $CallsConsolidated['constestadas_15'],
-                            'constestadas_20'   => $CallsConsolidated['constestadas_20'],
-                            'abandonadas_10'    => $CallsConsolidated['abandonadas_10'],
-                            'abandonadas_15'    => $CallsConsolidated['abandonadas_15'],
-                            'abandonadas_20'    => $CallsConsolidated['abandonadas_20'],
-                            'ro10'              => $CallsConsolidated['ro10'],
-                            'ro15'              => $CallsConsolidated['ro15'],
-                            'ro20'              => $CallsConsolidated['ro20'],
-                            'min_espera'        => $CallsConsolidated['min_espera'],
-                            'duracion'          => $CallsConsolidated['duracion'],
-                            'avgw'              => $CallsConsolidated['avgw'],
-                            'avgt'              => $CallsConsolidated['avgt'],
-                            'answ'              => $CallsConsolidated['answ'],
-                            'unansw'            => $CallsConsolidated['unansw'],
-                            'ns10'              => $CallsConsolidated['ns10'],
-                            'ns15'              => $CallsConsolidated['ns15'],
-                            'ns20'              => $CallsConsolidated['ns20'],
-                            'avh210'            => $CallsConsolidated['avh210'],
-                            'avh215'            => $CallsConsolidated['avh215'],
-                            'avh220'            => $CallsConsolidated['avh220'],  
+                            'Name'              => $CallsConsolidated['Name'],
+                            'Received'          => $CallsConsolidated['Received'],
+                            'Answered'          => $CallsConsolidated['Answered'],
+                            'Abandoned'         => $CallsConsolidated['Abandoned'],
+                            'Transferred'       => $CallsConsolidated['Transferred'],
+                            'Attended'          => $CallsConsolidated['Attended'],
+                            'Answ 10s'          => $CallsConsolidated['Answ 10s'],
+                            'Answ 15s'          => $CallsConsolidated['Answ 15s'],
+                            'Answ 20s'          => $CallsConsolidated['Answ 20s'],
+                            'Answ 30s'          => $CallsConsolidated['Answ 30s'],
+                            'Aband 10s'         => $CallsConsolidated['Aband 10s'],
+                            'Aband 15s'         => $CallsConsolidated['Aband 15s'],
+                            'Aband 20s'         => $CallsConsolidated['Aband 20s'],
+                            'Aband 30s'         => $CallsConsolidated['Aband 30s'],
+                            'Ro10'              => $CallsConsolidated['Ro10'],
+                            'Ro15'              => $CallsConsolidated['Ro15'],
+                            'Ro20'              => $CallsConsolidated['Ro20'],
+                            'Ro30'              => $CallsConsolidated['Ro30'],
+                            'Wait Time'         => $CallsConsolidated['Wait Time'],
+                            'Talk Time'         => $CallsConsolidated['Talk Time'],
+                            'Avg Wait'          => $CallsConsolidated['Avg Wait'],
+                            'Avg Talk'          => $CallsConsolidated['Avg Talk'],
+                            'Answ'              => $CallsConsolidated['Answ'],
+                            'Unansw'            => $CallsConsolidated['Unansw'],
+                            'Ns10'              => $CallsConsolidated['Ns10'],
+                            'Ns15'              => $CallsConsolidated['Ns15'],
+                            'Ns20'              => $CallsConsolidated['Ns20'],
+                            'Ns30'              => $CallsConsolidated['Ns30'],
+                            'Avh2 10'           => $CallsConsolidated['Avh2 10'],
+                            'Avh2 15'           => $CallsConsolidated['Avh2 15'],
+                            'Avh2 20'           => $CallsConsolidated['Avh2 20'],  
+                            'Avh2 30'           => $CallsConsolidated['Avh2 30'],  
                         ]);
         }
 
@@ -475,6 +552,11 @@ class ConsolidatedCallsController extends CosapiController
     }
 
 
+    /**
+     * [export_csv Función que permite exportar la información el formato CSV]
+     * @param  [date]  $days [Días de consulta]
+     * @return [array]       [Array con datos de las rutas donde estas los CSV generados]
+     */
     protected function export_csv($days){
 
         $events = ['skills_group','agent_group','day_group','hour_group'];
@@ -498,6 +580,12 @@ class ConsolidatedCallsController extends CosapiController
     }
 
 
+
+    /**
+     * [export_excel Función que permite exportar la información el formato Excel]
+     * @param  [date]  $days [Días de consulta]
+     * @return [array]       [Array con datos de las rutas donde estas los Excel generados]
+     */
     protected function export_excel($days){
         Excel::create('consolidated_calls', function($excel) use($days) {
 

@@ -57,7 +57,7 @@
 		        "scrollCollapse"    : true,
 		        "select"            : true,
 		        "dom"             : 'Bfrtip',
-                "buttons"           : ['copyHtml5', 'excelHtml5'],		        
+                "buttons"           : ['copyHtml5', 'csvHtml5', 'excelHtml5'],		        
 		        "columns"			: [    
 				                        {"data":"date_agent"},
 				                        {"data":"hour_agent"},
@@ -72,6 +72,3 @@
 
 
 </script>
-
-
-	

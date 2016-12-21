@@ -11,6 +11,7 @@
 				<h3 class="box-title"><b>Reporte Detallado de Eventos por Agente</b></h3>
 			</div>
 			<input type="hidden" name="_token" value="{!! csrf_token() !!}">
+			<input type="hidden" id="hidEvent" value='export_events_detail'>
 
 			@include('filtros.filtro-fecha')
 			@include('filtros.button-search')
