@@ -138,8 +138,8 @@ class DashboardController extends CosapiController
   {
         if($request->ajax()){
             $list_kpi_details     = $this->list_kpi_details();
-            $Received             = $list_kpi_details->total_calls + $list_kpi_details->total_transfer ;
-            $Inbound              = $Received;
+            $Received             = $list_kpi_details->total_calls + $list_kpi_details->total_transfer + $list_kpi_details->total_abandoned;
+            $Inbound              = $list_kpi_details->total_calls + $list_kpi_details->total_transfer;
             $Abandon              = $list_kpi_details->total_abandoned;
             $Transfer             = $list_kpi_details->total_transfer;
             $Answered_less_20          = $list_kpi_details->answ_20s;

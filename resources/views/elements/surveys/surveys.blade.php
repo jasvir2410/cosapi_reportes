@@ -6,14 +6,18 @@
             <table id="table-surveys" class="table table-bordered display nowrap table-responsive" cellspacing="0" width="100%">
                 <thead>
                 <tr>
+                    <th>Tipo Encuesta</th>
+                    <th>Date</th>
+                    <th>Hour</th>
                     <th>Username</th>
                     <th>Anexo</th>
                     <th>Telephone</th>
                     <th>Skill</th>
                     <th>Duration</th>
-                    <th>Answer</th>
-                    <th>Date</th>
-                    <th>Hour</th>
+                    <th>Question_01</th>
+                    <th>Answer_01</th>
+                    <th>Question_02</th>
+                    <th>Answer_02</th>
                     <th>Action</th>
                 </tr>
                 </thead>
