@@ -93,15 +93,19 @@ function columns_datatable(route){
 
     if(route == 'surveys'){
         var columns =   [
-            {"data" : "username"},
-            {"data" : "anexo"},
-            {"data" : "telephone"},
-            {"data" : "skill"},
-            {"data" : "duration"},
-            {"data" : "answer"},
-            {"data" : "date"},
-            {"data" : "hour"},
-            {"data" : "action"}
+            {"data" : "Type Survey"},
+            {"data" : "Date"},
+            {"data" : "Hour"},
+            {"data" : "Username"},
+            {"data" : "Anexo"},
+            {"data" : "Telephone"},
+            {"data" : "Skill"},
+            {"data" : "Duration"},
+            {"data" : "Question_01"},
+            {"data" : "Answer_01"},
+            {"data" : "Question_02"},
+            {"data" : "Answer_02"},
+            {"data" : "Action"}
         ];
     }
 

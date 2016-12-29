@@ -138,19 +138,19 @@ class DashboardController extends CosapiController
   {
         if($request->ajax()){
             $list_kpi_details     = $this->list_kpi_details();
-            $Received             = $list_kpi_details->total_calls + $list_kpi_details->total_transfer ;
-            $Inbound              = $Received;
+            $Received             = $list_kpi_details->total_calls + $list_kpi_details->total_transfer + $list_kpi_details->total_abandoned;
+            $Inbound              = $list_kpi_details->total_calls + $list_kpi_details->total_transfer;
             $Abandon              = $list_kpi_details->total_abandoned;
             $Transfer             = $list_kpi_details->total_transfer;
-            $Answered_less_20          = $list_kpi_details->answ_20s;
-            $Answered_less_15          = $list_kpi_details->answ_15s;
-            $Answered_less_10          = $list_kpi_details->answ_10s;
-            $Unaswered_less_20   = $list_kpi_details->abandon_20s;
-            $Unaswered_less_15   = $list_kpi_details->abandon_15s;
-            $Unaswered_less_10   = $list_kpi_details->abandon_10s;
-            $Unaswered_high_20   = $list_kpi_details->total_abandoned - $list_kpi_details->abandon_20s;
-            $Unaswered_high_15   = $list_kpi_details->total_abandoned - $list_kpi_details->abandon_15s;
-            $Unaswered_high_10   = $list_kpi_details->total_abandoned - $list_kpi_details->abandon_10s;
+            $Answered_less_20     = $list_kpi_details->answ_20s;
+            $Answered_less_15     = $list_kpi_details->answ_15s;
+            $Answered_less_10     = $list_kpi_details->answ_10s;
+            $Unaswered_less_20    = $list_kpi_details->abandon_20s;
+            $Unaswered_less_15    = $list_kpi_details->abandon_15s;
+            $Unaswered_less_10    = $list_kpi_details->abandon_10s;
+            $Unaswered_high_20    = $list_kpi_details->total_abandoned - $list_kpi_details->abandon_20s;
+            $Unaswered_high_15    = $list_kpi_details->total_abandoned - $list_kpi_details->abandon_15s;
+            $Unaswered_high_10    = $list_kpi_details->total_abandoned - $list_kpi_details->abandon_10s;
             $Queue                = 0;
             $Sla_20               = convertDecimales(($list_kpi_details->answ_20s / $Received)*100,2);
             $Sla_15               = convertDecimales(($list_kpi_details->answ_15s / $Received)*100,2);

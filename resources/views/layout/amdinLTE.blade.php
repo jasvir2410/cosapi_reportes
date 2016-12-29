@@ -21,7 +21,7 @@
      @yield('css')
   </head>
 
-  <body class="hold-transition skin-red-light sidebar-mini sidebar-collapse ">
+  <body class="hold-transition skin-red-light sidebar-mini ">
     <!--para que se muestre la pagina en donde estas -->
     <?php
       $crumbs = explode("/",$_SERVER["REQUEST_URI"]);
