@@ -93,7 +93,7 @@ function columns_datatable(route){
 
     if(route == 'surveys'){
         var columns =   [
-            {"data" : "Tipo Encuesta"},
+            {"data" : "Type Survey"},
             {"data" : "Date"},
             {"data" : "Hour"},
             {"data" : "Username"},

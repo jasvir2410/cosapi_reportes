@@ -31,11 +31,18 @@
                 <i class="fa fa-phone-square"></i> <span>REPORTING CALLS</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-                <li ><a tabindex="-1" href="#" id="agents_online" class="reportes"><i class="fa fa-circle-o text-red"></i> Agentes Online</a></li>
-                <li><a href="#" id="surveys"          class="reportes"><i class="fa fa-circle-o text-purple"></i> Encuestas</a></li>
+                <li ><a tabindex="-1" href="#" id="agents_online" class="reportes"><i class="fa fa-circle-o text-red"></i> Agents Online</a></li>
                 <li><a href="#" id="incoming_calls"     class="reportes"><i class="fa fa-circle-o text-green"></i> Inbound Calls</a></li>
                 <li><a href="#" id="outgoing_calls"     class="reportes"><i class="fa fa-circle-o text-yellow"></i> Outbound Calls</a></li>
                 <li><a href="#" id="consolidated_calls" class="reportes"><i class="fa fa-circle-o text-blue"></i> Consolidated Calls</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#">
+                <i class="fa fa-book"></i> <span>REPORTING SURVEYS</span> <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+                <li><a href="#" id="surveys"            class="reportes"><i class="fa fa-circle-o text-purple"></i> Detail Surveys</a></li>
               </ul>
             </li>
           </ul>

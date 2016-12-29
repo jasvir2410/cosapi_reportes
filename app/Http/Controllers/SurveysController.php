@@ -7,7 +7,10 @@ use Cosapi\Collector\Collector;
 
 use Cosapi\Http\Requests;
 use Cosapi\Http\Controllers\CosapiController;
+use Cosapi\Models\TipoEncuesta;
 use Cosapi\Models\Survey;
+use Excel;
+use DB;
 
 class SurveysController extends CosapiController
 {
@@ -20,23 +23,25 @@ class SurveysController extends CosapiController
     {             
         if ($request->ajax()){
             if ($request->fecha_evento){
-                return $this->list_surveys($request->fecha_evento);
+                return $this->list_surveys($request->fecha_evento, $request->evento);
             }else{
                 return view('elements/surveys/index');
             }
         }
     }
 
+
+
     /**
      * [list_surveys Función para obtener los datos a cargar en el repote Surveys]
      * @param  [string] $fecha_evento [Fecha a consultar]
      * @return [array]                [Array de datos de los reportes Surveys]
      */
-    protected function list_surveys($fecha_evento){
-        $query_surveys         = $this->query_surveys($fecha_evento);
+    protected function list_surveys($fecha_evento, $evento){
+        $query_surveys         = $this->query_surveys($fecha_evento,$evento);
         $builderview           = $this->builderview($query_surveys);
-        $surveyscollection     = $this->surveyscollection($builderview);        
-        $list_call_surveys     = $this->FormatDatatable($surveyscollection);
+        $surveyscollection     = $this->surveyscollection($builderview);   
+        $list_call_surveys     = $this->FormatDatatable($surveyscollection);    
 
         return $list_call_surveys;
     }
@@ -58,25 +63,60 @@ class SurveysController extends CosapiController
      * @param  [string] $days [Fecha a consultar]
      * @return [array]        [Array con datos de la consulta realizada]
      */
-    protected function query_surveys($fecha_evento){        
-        $days                                   = explode(' - ', $fecha_evento);
-        $list_encuesta                          = \DB::select('call sp_data_encuesta("'.$days[0].'","'.$days[1].'")');
-        $resuldato_encuesta                     = \DB::select('call sp_data_resultados("'.$days[0].'","'.$days[1].'")');
-        $builderesultado                        = $this->builderesultado($resuldato_encuesta);
-        $query_surveys['detalle_llamada']       = $list_encuesta;
-        $query_surveys['preguntas_respuestas']  = $builderesultado;
+    protected function query_surveys($fecha_evento,$events){
+
+        $cantidad_preguntas = 1;       
+        $days                                       = explode(' - ', $fecha_evento);
+        $events_id                                  = $this->get_events($events);
+        $list_encuesta                              = \DB::select('call sp_data_surveys("'.$days[0].'","'.$days[1].'",'.$events_id.')');
+        $resuldato_encuesta                         = \DB::select('call sp_data_result("'.$days[0].'","'.$days[1].'",'.$events_id.')');
+        $builderesultado                            = $this->builderesultado($resuldato_encuesta,$cantidad_preguntas);
+        $query_surveys['detalle_llamada']           = $list_encuesta;
+        $query_surveys['preguntas_respuestas']      = $builderesultado;
         return $query_surveys;
     } 
 
-    protected function builderesultado($resuldato_encuesta){
-        $builderesultado = [];
-        $secuencia = 1;
+
+    /**
+     * [get_events Función que muestra los eventos en base a la acción a realizar]
+     * @param  [string] $events [Tipo de reportes de resumen]
+     * @return [array]          [Eventos que comforman el tipo de reporte]
+     */
+    protected function get_events($events){
+
+        switch($events){
+            case 'surveys_inbound' :
+                $events             = 'Entrante';
+            break;
+            case 'surveys_outbound' :
+                $events             = 'Saliente';
+            break;
+            case 'surveys_released' :
+                $events             = 'Liberada';
+            break;
+        }
+
+        $events_id  = TipoEncuesta::select('id')->where('name','=',$events)->get()->toArray();
+        return $events_id[0]['id'];
+    }
+
+
+
+    /**
+     * [builderesultado Función que contruye la información de los resultados]
+     * @param  [array] $resuldato_encuesta [Resultado de la consulta de la información de la encuesta]
+     * @return [array]                     [Array armado con datos ordenados obtenidos]
+     */
+    protected function builderesultado($resuldato_encuesta,$cantidad_preguntas){
+        $builderesultado    = [];
+        $secuencia          = 1;
+        $incrementador      = 1;
         foreach ($resuldato_encuesta as $resuldato) {
             if(!isset($builderesultado[$resuldato->encuesta_id])){
-                $builderesultado[$resuldato->encuesta_id]['pregunta_1']     ='-';
-                $builderesultado[$resuldato->encuesta_id]['respuesta_1']    ='-';
-                $builderesultado[$resuldato->encuesta_id]['pregunta_2']     ='-';
-                $builderesultado[$resuldato->encuesta_id]['respuesta_2']    ='-';
+                for ($incrementador = 1; $incrementador <= $cantidad_preguntas; $incrementador++) { 
+                    $builderesultado[$resuldato->encuesta_id]['pregunta_'.$incrementador]     ='-';
+                    $builderesultado[$resuldato->encuesta_id]['respuesta_'.$incrementador]    ='-';
+                }
                 $secuencia = 1;
             }
             $builderesultado[$resuldato->encuesta_id]['pregunta_'.$secuencia]  = $resuldato->pregunta;
@@ -93,31 +133,34 @@ class SurveysController extends CosapiController
      * @return [array]                [Array con con los datos modificados para la vista]
      */
     protected function builderview($query_surveys){
-        $builderview = [];
-        $posicion = 0;
+        $builderview    = [];
+        $posicion       = 0;
         foreach ($query_surveys['detalle_llamada'] as $surveys) {
 
-            if(!isset($query_surveys['preguntas_respuestas'][$surveys->Id])){
-                $query_surveys['preguntas_respuestas'][$surveys->Id]['pregunta_1']  ='-';
-                $query_surveys['preguntas_respuestas'][$surveys->Id]['respuesta_1'] ='-';
+            if(!isset($query_surveys['preguntas_respuestas'][$surveys->Id]['pregunta_1'])){
+                    $query_surveys['preguntas_respuestas'][$surveys->Id]['pregunta_1']  ='-';
+                    $query_surveys['preguntas_respuestas'][$surveys->Id]['respuesta_1'] ='-';             
+            }
+
+            if(!isset($query_surveys['preguntas_respuestas'][$surveys->Id]['pregunta_2'])){
                 $query_surveys['preguntas_respuestas'][$surveys->Id]['pregunta_2']  ='-';
-                $query_surveys['preguntas_respuestas'][$surveys->Id]['respuesta_2'] ='-';               
+                $query_surveys['preguntas_respuestas'][$surveys->Id]['respuesta_2'] ='-'; 
             }
 
             if($surveys->Skill == ''){$surveys->Skill = '-';}
-
+            
+            $builderview[$posicion]['Type Survey']    = $surveys->TipoEncuesta;
+            $builderview[$posicion]['Date']           = $surveys->Fecha;
+            $builderview[$posicion]['Hour']           = $surveys->Hora;
             $builderview[$posicion]['Username']       = $surveys->Username;
             $builderview[$posicion]['Anexo']          = $surveys->Anexo;
             $builderview[$posicion]['Telephone']      = $surveys->Telefono;
             $builderview[$posicion]['Skill']          = $surveys->Skill;
-            $builderview[$posicion]['Duration']       = $surveys->Duracion;
-            $builderview[$posicion]['Tipo Encuesta']  = $surveys->TipoEncuesta;
+            $builderview[$posicion]['Duration']       = conversorSegundosHoras($surveys->Duracion,false);
             $builderview[$posicion]['Question_01']    = $query_surveys['preguntas_respuestas'][$surveys->Id]['pregunta_1'];
             $builderview[$posicion]['Answer_01']      = $query_surveys['preguntas_respuestas'][$surveys->Id]['respuesta_1'];
             $builderview[$posicion]['Question_02']    = $query_surveys['preguntas_respuestas'][$surveys->Id]['pregunta_2'];
-            $builderview[$posicion]['Answer_02']      = $query_surveys['preguntas_respuestas'][$surveys->Id]['respuesta_2'];             
-            $builderview[$posicion]['Date']           = $surveys->Fecha;
-            $builderview[$posicion]['Hour']           = $surveys->Hora;
+            $builderview[$posicion]['Answer_02']      = $query_surveys['preguntas_respuestas'][$surveys->Id]['respuesta_2'];
             $builderview[$posicion]['Action']         = $surveys->Evento;
             
             
@@ -138,18 +181,18 @@ class SurveysController extends CosapiController
         foreach ($builderview as $view) {
             $surveyscollection->push([
                 
+                'Type Survey'       =>  $view['Type Survey'],
+                'Date'              =>  $view['Date'],
+                'Hour'              =>  $view['Hour'],
                 'Username'          =>  $view['Username'],
                 'Anexo'             =>  $view['Anexo'],
                 'Telephone'         =>  $view['Telephone'],
                 'Skill'             =>  $view['Skill'],
                 'Duration'          =>  $view['Duration'],
-                'Tipo Encuesta'     =>  $view['Tipo Encuesta'],
                 'Question_01'       =>  $view['Question_01'],
                 'Answer_01'         =>  $view['Answer_01'],
                 'Question_02'       =>  $view['Question_02'],
                 'Answer_02'         =>  $view['Answer_02'],
-                'Date'              =>  $view['Date'],
-                'Hour'              =>  $view['Hour'],
                 'Action'            =>  $view['Action']
             ]);
         }
@@ -164,12 +207,20 @@ class SurveysController extends CosapiController
      */
     protected function export_csv($days){
 
-        $builderview = $this->builderview($this->query_surveys($days),'export');
-        $this->BuilderExport($builderview,'surveys','csv','exports');
+        $events = ['surveys_inbound','surveys_outbound','surveys_released'];
 
+        for($i=0;$i<count($events);$i++){
+            $builderview = $this->builderview($this->query_surveys($days,$events[$i]));
+            $this->BuilderExport($builderview,$events[$i],'csv','exports');
+        }
+    
         $data = [
             'succes'    => true,
-            'path'      => ['http://'.$_SERVER['HTTP_HOST'].'/exports/surveys.csv']
+            'path'      => [
+                            'http://'.$_SERVER['HTTP_HOST'].'/exports/surveys_inbound.csv',
+                            'http://'.$_SERVER['HTTP_HOST'].'/exports/surveys_outbound.csv',
+                            'http://'.$_SERVER['HTTP_HOST'].'/exports/surveys_released.csv'
+                            ]
         ];
 
         return $data;
@@ -182,13 +233,27 @@ class SurveysController extends CosapiController
      * @return [array]        [Array con la ubicación donde se a guardado el archivo exportado en Excel]
      */
     protected function export_excel($days){
+        Excel::create('report_surveys', function($excel) use($days) {
 
-        $builderview = $this->builderview($this->query_surveys($days,'surveys'),'export');
-        $this->BuilderExport($builderview,'surveys','xlsx','exports');
+            $excel->sheet('Inbound', function($sheet) use($days) {
+                $sheet->fromArray($this->builderview($this->query_surveys($days,'surveys_inbound')));
+            });
+
+            $excel->sheet('Outbound', function($sheet) use($days) {
+                $sheet->fromArray($this->builderview($this->query_surveys($days,'surveys_outbound')));
+            });
+
+
+            $excel->sheet('Released', function($sheet) use($days) {
+                $sheet->fromArray($this->builderview($this->query_surveys($days,'surveys_released')));
+            });
+
+
+        })->store('xlsx','exports');
 
         $data = [
             'succes'    => true,
-            'path'      => ['http://'.$_SERVER['HTTP_HOST'].'/exports/surveys.xlsx']
+            'path'      => ['http://'.$_SERVER['HTTP_HOST'].'/exports/report_surveys.xlsx']
         ];
 
         return $data;
