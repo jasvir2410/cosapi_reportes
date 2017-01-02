@@ -24,7 +24,9 @@ function dataTables_entrantes(nombreDIV, data, route){
             type    : 'POST',
             data    : data
         },
-
+        "order"             : [
+            [1,"asc"]
+        ],
         "paging"            : true,
         "pageLength"        : 100,
         "lengthMenu"        : [100, 200, 300, 400, 500],

@@ -56,7 +56,6 @@ class IncomingCallsController extends CosapiController
         $builderview        = $this->builderview($query_calls);
         $incomingcollection = $this->incomingcollection($builderview);
         $calls_incoming     = $this->FormatDatatable($incomingcollection);
-
         return $calls_incoming;
     }
 
