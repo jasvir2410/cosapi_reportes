@@ -2,6 +2,8 @@
 
 namespace Cosapi\Http\Controllers;
 
+use Cosapi\Models\Anexo;
+use Cosapi\Models\Cola;
 use Illuminate\Http\Request;
 use Cosapi\Facades\phpAMI;
 use Cosapi\Http\Requests;
@@ -85,7 +87,7 @@ class CosapiController extends Controller
      */
     protected function conexion_ami()
     {
-        $login = phpAMI::login('10.200.74.253');
+        $login = phpAMI::login(getenv('ASTERISK_HOST'));
 
         if ($login == false) {
             echo 'Error - Problemas de Socket a Nivel de Asterisk';
@@ -151,6 +153,28 @@ class CosapiController extends Controller
             'observaciones' => $observaciones
         ));
 
+    }
+
+
+    protected function list_queues(){
+        $list_queues = [];
+        $query_queues = Cola::select()->get()->toArray();
+        foreach($query_queues as $queues){
+            $list_queues[$queues['name']]['vdn']=$queues['vdn'];
+        }
+        return $list_queues;
+    }
+
+    protected function queues_proyect(){
+        $queues_proyect     = [];
+        $posicion           = 0;
+        $query_queues       = Cola::select()->where('estado_id','=',1)->get()->toArray();
+        foreach($query_queues as $queues){
+            $queues_proyect[$posicion] = $queues['name'];
+            $posicion++;
+        }
+        //dd($queues_proyect);
+        return $queues_proyect;
     }
 
 }

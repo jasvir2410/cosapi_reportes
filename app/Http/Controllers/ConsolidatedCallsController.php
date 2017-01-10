@@ -105,11 +105,12 @@ class ConsolidatedCallsController extends CosapiController
      */
     protected function query_calls_inbound ($fecha_evento)
     {
+        $queues_proyect     = $this->queues_proyect();
         $days               = explode(' - ', $fecha_evento);
         $calls_inbound      = Queue_empresa::select_fechamod()
                                         ->filtro_days($days)
                                         ->filtro_anexos()
-                                        ->whereNotIn('queue', ['NONE','HD_CE_BackOffice','Pruebas','HD_CE_Calidad'])
+                                        ->whereIn('queue', $queues_proyect)
                                         ->OrderBy('id')
                                         ->get()
                                         ->toArray();                         
@@ -124,11 +125,12 @@ class ConsolidatedCallsController extends CosapiController
      */
     protected function calls_queue ($fecha_evento)
     {
+        $queues_proyect = $this->queues_proyect();
         $days           = explode(' - ', $fecha_evento);
         $calls_queue    = Queue_empresa::Select('queue')
                                     ->filtro_days($days)
                                     ->filtro_anexos()
-                                    ->whereNotIn('queue', ['NONE','HD_CE_BackOffice','Pruebas','HD_CE_Calidad'])
+                                    ->whereIn('queue', $queues_proyect)
                                     ->groupBy('queue')
                                     ->get()
                                     ->toArray();
@@ -143,12 +145,13 @@ class ConsolidatedCallsController extends CosapiController
      */
     protected function calls_agents ($fecha_evento)
     {
+        $queues_proyect = $this->queues_proyect();
         $days           = explode(' - ', $fecha_evento);
         $calls_agents   = Queue_empresa::Select('agent')
                                     ->filtro_days($days)
                                     ->filtro_anexos()
                                     ->whereNotIn('agent', ['NONE'])
-                                    ->whereNotIn('queue', ['NONE','HD_CE_BackOffice','Pruebas','HD_CE_Calidad'])
+                                    ->whereIn('queue', $queues_proyect)
                                     ->groupBy('agent')
                                     ->get()
                                     ->toArray();

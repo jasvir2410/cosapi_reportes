@@ -9,8 +9,6 @@ class Cdr extends Model
 {
     protected $connection   = 'cdr_asterisk';
     protected $table        = 'cdr_empresas';
-    /*protected $connection   = 'cdr_asterisk';
-    protected $table        = 'cdr';*/
 
     public function scopeFiltro_days($query,$days)
     {

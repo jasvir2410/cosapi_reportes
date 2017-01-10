@@ -338,7 +338,7 @@ class DashboardController extends CosapiController
     $errno    = "";
     $errstr   = "";
     $timeout  = "30";
-    $host     = "10.200.74.253";
+    $host     = getenv('ASTERISK_HOST');
     $socket = fsockopen($host,"5038", $errno, $errstr,  $timeout);
     fputs($socket, "Action: Login\r\n");
     fputs($socket, "UserName: alf1712\r\n");
@@ -563,7 +563,7 @@ class DashboardController extends CosapiController
 
   protected function showEncoladas(){
     ob_implicit_flush(false);
-    $socket     = fsockopen("10.200.74.253","5038", $errornum, $errorstr);
+    $socket     = fsockopen(getenv('ASTERISK_HOST'),"5038", $errornum, $errorstr);
     $chans      = array();
     $curr_chan  = "";
 

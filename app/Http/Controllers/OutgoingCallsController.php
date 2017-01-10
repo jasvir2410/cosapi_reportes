@@ -64,7 +64,7 @@ class OutgoingCallsController extends CosapiController
      */
     protected function query_calls_outgoing($fecha_evento){
         $days                   = explode(' - ', $fecha_evento);
-        $tamano_anexo           = array ('3');
+        $tamano_anexo           = array (getenv('ANEXO_LENGTH'));
         $tamano_telefono        = array ('7','9');
         $query_calls_outgoing   = AsteriskCDR::Select()
                                     ->whereIn(DB::raw('LENGTH(src)'),$tamano_anexo)
