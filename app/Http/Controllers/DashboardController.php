@@ -152,9 +152,9 @@ class DashboardController extends CosapiController
             $Unaswered_high_15    = $list_kpi_details->total_abandoned - $list_kpi_details->abandon_15s;
             $Unaswered_high_10    = $list_kpi_details->total_abandoned - $list_kpi_details->abandon_10s;
             $Queue                = 0;
-            $Sla_20               = convertDecimales(($list_kpi_details->answ_20s / $Received)*100,2);
-            $Sla_15               = convertDecimales(($list_kpi_details->answ_15s / $Received)*100,2);
-            $Sla_10               = convertDecimales(($list_kpi_details->answ_10s / $Received)*100,2);
+            $Sla_20               = convertDecimales(division($list_kpi_details->answ_20s,$Received)*100,2);
+            $Sla_15               = convertDecimales(division($list_kpi_details->answ_15s,$Received)*100,2);
+            $Sla_10               = convertDecimales(division($list_kpi_details->answ_10s,$Received)*100,2);
 
             return view('elements/dashboard/pictures_kpi/index')->with(array(
                            'Inbound'              => $Inbound,
