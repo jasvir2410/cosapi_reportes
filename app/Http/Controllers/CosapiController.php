@@ -155,16 +155,23 @@ class CosapiController extends Controller
 
     }
 
-
+    /**
+     * [Función que devuelte la lista de vdn de las Colas]
+     * @return Array $list_queues
+     */
     protected function list_queues(){
-        $list_queues = [];
-        $query_queues = Cola::select()->get()->toArray();
+        $list_queues                                = [];
+        $query_queues                               = Cola::select()->get()->toArray();
         foreach($query_queues as $queues){
-            $list_queues[$queues['name']]['vdn']=$queues['vdn'];
+            $list_queues[$queues['name']]['vdn']    = $queues['vdn'];
         }
         return $list_queues;
     }
 
+    /**
+     * [Funcion que retorna las Colas que pueden visualzarce ]
+     * @return array $queues_proyect [Array con la colas]
+     */
     protected function queues_proyect(){
         $queues_proyect     = [];
         $posicion           = 0;
@@ -173,8 +180,8 @@ class CosapiController extends Controller
             $queues_proyect[$posicion] = $queues['name'];
             $posicion++;
         }
-        //dd($queues_proyect);
         return $queues_proyect;
     }
+
 
 }
