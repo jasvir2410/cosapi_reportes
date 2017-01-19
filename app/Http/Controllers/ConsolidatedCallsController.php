@@ -4,7 +4,7 @@ namespace Cosapi\Http\Controllers;
 
 use Cosapi\Http\Requests;
 use Illuminate\Http\Request;
-use Cosapi\Models\Queue_Empresa;
+use Cosapi\Models\Queue_Log;
 use Cosapi\Http\Controllers\CosapiController;
 use Cosapi\Collector\Collector;
 
@@ -107,7 +107,7 @@ class ConsolidatedCallsController extends CosapiController
     {
         $queues_proyect     = $this->queues_proyect();
         $days               = explode(' - ', $fecha_evento);
-        $calls_inbound      = Queue_empresa::select_fechamod()
+        $calls_inbound      = Queue_Log::select_fechamod()
                                         ->filtro_days($days)
                                         ->filtro_anexos()
                                         ->whereIn('queue', $queues_proyect)
@@ -127,7 +127,7 @@ class ConsolidatedCallsController extends CosapiController
     {
         $queues_proyect = $this->queues_proyect();
         $days           = explode(' - ', $fecha_evento);
-        $calls_queue    = Queue_empresa::Select('queue')
+        $calls_queue    = Queue_Log::Select('queue')
                                     ->filtro_days($days)
                                     ->filtro_anexos()
                                     ->whereIn('queue', $queues_proyect)
@@ -147,7 +147,7 @@ class ConsolidatedCallsController extends CosapiController
     {
         $queues_proyect = $this->queues_proyect();
         $days           = explode(' - ', $fecha_evento);
-        $calls_agents   = Queue_empresa::Select('agent')
+        $calls_agents   = Queue_Log::Select('agent')
                                     ->filtro_days($days)
                                     ->filtro_anexos()
                                     ->whereNotIn('agent', ['NONE'])

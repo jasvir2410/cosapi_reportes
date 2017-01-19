@@ -375,7 +375,7 @@ class DashboardController extends CosapiController
    * @return [type]               [Array con la información tratada del Asterisk]
    */
   protected function builderInformationCalls($showChannels){
-    $tamano_anexo = 3;
+    $tamano_anexo = getenv('ANEXO_LENGTH');
     $InformationCalls = [];
 
     foreach ($showChannels as $showChannel) {

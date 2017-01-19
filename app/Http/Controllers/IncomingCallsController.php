@@ -3,9 +3,9 @@
 namespace Cosapi\Http\Controllers;
 
 use Cosapi\Http\Requests;
-use Cosapi\Models\Cola;
+use Cosapi\Models\Queue;
 use Illuminate\Http\Request;
-use Cosapi\Models\Queue_Empresa;
+use Cosapi\Models\Queue_Log;
 use Cosapi\Http\Controllers\CosapiController;
 use Cosapi\Collector\Collector;
 
@@ -74,7 +74,7 @@ class IncomingCallsController extends CosapiController
         $queues_proyect = $this->queues_proyect();
         $days           = explode(' - ', $days);
         $events         = $this->get_events($events);
-        $query_calls    = Queue_empresa::select_fechamod()
+        $query_calls    = Queue_Log::select_fechamod()
                                         ->filtro_users($users)
                                         ->filtro_hours($hours)
                                         ->filtro_days($days)
@@ -160,7 +160,7 @@ class IncomingCallsController extends CosapiController
         $incomingcollection                 = new Collector;
         foreach ($builderview as $view) {
 
-            $colas = $this->list_queues();
+            $colas = $this->list_vdn();
             $vdn = $colas[$view['skill']]['vdn'];
             $audio = 'No compatible';
             $day   = Carbon::parse($view['date']);

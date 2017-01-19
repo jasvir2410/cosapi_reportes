@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 use Cosapi\Models\User;
 use Cosapi\Models\Eventos;
-use Cosapi\Models\AsteriskCDR;
 use Cosapi\Models\DetalleEventosHistory;
 use Cosapi\Models\DetalleEventos;
 use Cosapi\Http\Controllers\CosapiController;

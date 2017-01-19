@@ -9,7 +9,4 @@
       </div>
       <input type="text" id="texto" name="fecha_evento" class="form-control pull-right" >
     </div>        
-  </div>  
-
- 
-
+  </div>

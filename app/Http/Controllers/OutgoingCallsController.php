@@ -4,7 +4,7 @@ namespace Cosapi\Http\Controllers;
 
 use Cosapi\Http\Requests;
 use Illuminate\Http\Request;
-use Cosapi\Models\AsteriskCDR;
+use Cosapi\Models\Cdr;
 use Cosapi\Http\Controllers\CosapiController;
 use Cosapi\Collector\Collector;
 
@@ -66,15 +66,15 @@ class OutgoingCallsController extends CosapiController
         $days                   = explode(' - ', $fecha_evento);
         $tamano_anexo           = array (getenv('ANEXO_LENGTH'));
         $tamano_telefono        = array ('7','9');
-        $query_calls_outgoing   = AsteriskCDR::Select()
+        $query_calls_outgoing   = Cdr::Select()
                                     ->whereIn(DB::raw('LENGTH(src)'),$tamano_anexo)
                                     ->whereIn(DB::raw('LENGTH(dst)'),$tamano_telefono)
                                     ->where('dst','not like','*%')
                                     ->where('disposition','=','ANSWERED')
                                     ->where('lastapp','=','Dial')
                                     ->where(function ($query){
-                                            $query->whereBetween('src',array ('201','225'))
-                                                  ->orWhereBetween('src',array ('248','248'));
+                                            $query->whereBetween('src',array ('4001','4010'));
+                                                  //->orWhereBetween('src',array ('248','248'));
                                         })
                                     ->filtro_days($days)
                                     ->OrderBy('src')

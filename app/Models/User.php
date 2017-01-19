@@ -34,13 +34,18 @@
         protected $hidden = ['password', 'remember_token'];
 
 
-        public function agente(){
-            return $this->belongsTo('Cosapi\Models\Agentes');
-        }
-
-
         public function getFullNameAttribute(){
             return $this->primer_nombre.' '.$this->apellido_paterno;
+        }
+
+        public function scopeFiltro_usuarios($query,$id_usuario)
+        {
+
+            if($id_usuario != '')
+            {
+                return    $query->whereIn('id', $id_usuario);
+            }
+
         }
 
     }

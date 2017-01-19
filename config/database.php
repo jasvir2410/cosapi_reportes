@@ -73,29 +73,6 @@ return [
             'prefix'    => '',
             'strict'    => false,
         ],
-        'queuelog' => [
-            'driver'    => 'mysql',
-            'host'      => env('QUEUELOG_HOST', 'localhost'),
-            'database'  => env('QUEUELOG_DATABASE', 'forge'),
-            'username'  => env('QUEUELOG_USERNAME', 'forge'),
-            'password'  => env('QUEUELOG_PASSWORD', ''),
-            'charset'   => 'utf8',
-            'collation' => 'utf8_unicode_ci',
-            'prefix'    => '',
-            'strict'    => false,
-        ],
-
-        'cdr_asterisk' => [
-            'driver'    => 'mysql',
-            'host'      => env('CDR_ASTERISK_HOST', 'localhost'),
-            'database'  => env('CDR_ASTERISK_DATABASE', 'forge'),
-            'username'  => env('CDR_ASTERISK_USERNAME', 'forge'),
-            'password'  => env('CDR_ASTERISK_PASSWORD', ''),
-            'charset'   => 'utf8',
-            'collation' => 'utf8_unicode_ci',
-            'prefix'    => '',
-            'strict'    => false,
-        ],
 
     ],
 
