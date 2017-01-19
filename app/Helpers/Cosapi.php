@@ -536,4 +536,16 @@ function detect_bronswer(){
     return $info;
 }
 
+/**
+ * @param $dividendo [el número considerado dividendo]
+ * @param $divisor   [el número considerado divisor]
+ * @return float|int [el resultado obtenido de la division]
+ */
+function division($dividendo, $divisor){
+    if($divisor == 0){
+        return 0;
+    }
+    return $dividendo/$divisor;
+}
+
 ?>

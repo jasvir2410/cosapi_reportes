@@ -152,9 +152,9 @@ class DashboardController extends CosapiController
             $Unaswered_high_15    = $list_kpi_details->total_abandoned - $list_kpi_details->abandon_15s;
             $Unaswered_high_10    = $list_kpi_details->total_abandoned - $list_kpi_details->abandon_10s;
             $Queue                = 0;
-            $Sla_20               = convertDecimales(($list_kpi_details->answ_20s / $Received)*100,2);
-            $Sla_15               = convertDecimales(($list_kpi_details->answ_15s / $Received)*100,2);
-            $Sla_10               = convertDecimales(($list_kpi_details->answ_10s / $Received)*100,2);
+            $Sla_20               = convertDecimales(division($list_kpi_details->answ_20s,$Received)*100,2);
+            $Sla_15               = convertDecimales(division($list_kpi_details->answ_15s,$Received)*100,2);
+            $Sla_10               = convertDecimales(division($list_kpi_details->answ_10s,$Received)*100,2);
 
             return view('elements/dashboard/pictures_kpi/index')->with(array(
                            'Inbound'              => $Inbound,
@@ -338,7 +338,7 @@ class DashboardController extends CosapiController
     $errno    = "";
     $errstr   = "";
     $timeout  = "30";
-    $host     = "10.200.74.253";
+    $host     = getenv('ASTERISK_HOST');
     $socket = fsockopen($host,"5038", $errno, $errstr,  $timeout);
     fputs($socket, "Action: Login\r\n");
     fputs($socket, "UserName: alf1712\r\n");
@@ -375,7 +375,7 @@ class DashboardController extends CosapiController
    * @return [type]               [Array con la información tratada del Asterisk]
    */
   protected function builderInformationCalls($showChannels){
-    $tamano_anexo = 3;
+    $tamano_anexo = getenv('ANEXO_LENGTH');
     $InformationCalls = [];
 
     foreach ($showChannels as $showChannel) {
@@ -563,7 +563,7 @@ class DashboardController extends CosapiController
 
   protected function showEncoladas(){
     ob_implicit_flush(false);
-    $socket     = fsockopen("10.200.74.253","5038", $errornum, $errorstr);
+    $socket     = fsockopen(getenv('ASTERISK_HOST'),"5038", $errornum, $errorstr);
     $chans      = array();
     $curr_chan  = "";
 

@@ -34,3 +34,10 @@ Route::post('level_of_occupation'								, ['uses'=>'LeveloccupationController@i
 
 // Reporte de encuestaa
 Route::post('surveys'											, ['uses'=>'SurveysController@index']);
+
+// Asignar Cola
+Route::post('agents_queue'										, ['uses'=>'AgentsQueueController@index']);
+Route::post('agents_queue/search_users'							, ['uses'=>'AgentsQueueController@search_users']);
+Route::post('agents_queue/assign_queue'							, ['uses'=>'AgentsQueueController@assign_queue']);
+Route::post('agents_queue/mark'							        , ['uses'=>'AgentsQueueController@mark_form']);
+Route::get('agents_queue/users'     							, ['uses'=>'AgentsQueueController@list_users']);
