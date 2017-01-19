@@ -6,12 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 
-class 	Queue_Empresa extends Model
+class 	Queue_Log extends Model
 {
-    protected $connection   = 'queuelog';
-    /*protected $table        = 'cc_cdr';
-    protected $primaryKey 	= 'id_linea';*/
-
+    protected $connection   = 'laravel';
     protected $table        = 'queue_stats_mv';
     protected $primaryKey   = 'id';
 
@@ -45,10 +42,6 @@ class 	Queue_Empresa extends Model
 
     }
 
-    /*public function scopeSelect_fechamod($query)
-    {
-        return $query->Select(DB::raw("*,DATE(datetime) as fechamod, TIME(datetime) AS timemod,  DATE_FORMAT((DATE_SUB(DATETIME, INTERVAL ( MINUTE(DATETIME)%30 )MINUTE)), '%H:%i') AS hourmod " ));
-    }*/
 
     public function scopeSelect_fechamod($query)
     {
@@ -77,13 +70,7 @@ class 	Queue_Empresa extends Model
 
     public function scopeFiltro_anexos($query)
     {
-        return    $query->where(DB::raw("url"),'!=', 3)
-                        ->where('url','not like','2%')
-                        ->where('url','not like','9%')
-                        ->where('url','not like','1%')
-                        ->where('url','not like','0800%')
-                        ->where('url','!=','79999');
-
+        return    $query->where(DB::raw("url"),'!=', 3);
     }
 
 }

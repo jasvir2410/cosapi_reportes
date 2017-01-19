@@ -68,6 +68,7 @@ class SurveysController extends CosapiController
         $cantidad_preguntas = 1;       
         $days                                       = explode(' - ', $fecha_evento);
         $events_id                                  = $this->get_events($events);
+        \DB::select('call sp_estatus_surveys()');
         $list_encuesta                              = \DB::select('call sp_data_surveys("'.$days[0].'","'.$days[1].'",'.$events_id.')');
         $resuldato_encuesta                         = \DB::select('call sp_data_result("'.$days[0].'","'.$days[1].'",'.$events_id.')');
         $builderesultado                            = $this->builderesultado($resuldato_encuesta,$cantidad_preguntas);
@@ -162,8 +163,8 @@ class SurveysController extends CosapiController
             $builderview[$posicion]['Question_02']    = $query_surveys['preguntas_respuestas'][$surveys->Id]['pregunta_2'];
             $builderview[$posicion]['Answer_02']      = $query_surveys['preguntas_respuestas'][$surveys->Id]['respuesta_2'];
             $builderview[$posicion]['Action']         = $surveys->Evento;
-            
-            
+
+
             $posicion ++;
         }
 

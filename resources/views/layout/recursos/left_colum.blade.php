@@ -45,6 +45,14 @@
                 <li><a href="#" id="surveys"            class="reportes"><i class="fa fa-circle-o text-purple"></i> Detail Surveys</a></li>
               </ul>
             </li>
+            <li>
+              <a href="#">
+                <i class="fa fa-gears"></i> <span>ADMINISTRATOR</span> <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+                <li><a href="#" id="agents_queue"       class="reportes"><i class="fa fa-circle-o text-purple"></i> Assign Queue</a></li>
+              </ul>
+            </li>
           </ul>
         </section>
         <!-- /.sidebar -->

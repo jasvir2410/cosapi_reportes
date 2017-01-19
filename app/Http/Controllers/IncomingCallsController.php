@@ -3,8 +3,9 @@
 namespace Cosapi\Http\Controllers;
 
 use Cosapi\Http\Requests;
+use Cosapi\Models\Queue;
 use Illuminate\Http\Request;
-use Cosapi\Models\Queue_Empresa;
+use Cosapi\Models\Queue_Log;
 use Cosapi\Http\Controllers\CosapiController;
 use Cosapi\Collector\Collector;
 
@@ -56,7 +57,6 @@ class IncomingCallsController extends CosapiController
         $builderview        = $this->builderview($query_calls);
         $incomingcollection = $this->incomingcollection($builderview);
         $calls_incoming     = $this->FormatDatatable($incomingcollection);
-
         return $calls_incoming;
     }
 
@@ -71,22 +71,22 @@ class IncomingCallsController extends CosapiController
      */
     public function query_calls($days,$events,$users ='', $hours ='')
     {
+        $queues_proyect = $this->queues_proyect();
         $days           = explode(' - ', $days);
         $events         = $this->get_events($events);
-        $query_calls    = Queue_empresa::select_fechamod()
+        $query_calls    = Queue_Log::select_fechamod()
                                         ->filtro_users($users)
                                         ->filtro_hours($hours)
                                         ->filtro_days($days)
                                         ->filtro_events($events)
                                         ->filtro_anexos()
-                                        ->whereNotIn('queue', ['NONE','HD_CE_BackOffice','Pruebas','HD_CE_Calidad'])
+                                        ->whereIn('queue', $queues_proyect)
                                         ->OrderBy('id')
                                         ->get()
                                         ->toArray();  
         
         return $query_calls;
     }
-
 
     /**
      * [get_events Función que muestra los eventos en base a la acción a realizar]
@@ -159,27 +159,9 @@ class IncomingCallsController extends CosapiController
     protected function incomingcollection($builderview){
         $incomingcollection                 = new Collector;
         foreach ($builderview as $view) {
-            switch ($view['skill']) {
-                case 'HD_CE_Telefonia':
-                    $vdn =  79301;
-                    break;
-                case 'HD_CE_Internet':
-                    $vdn =  79302;
-                    break;
-                case 'HD_CE_Cable':
-                    $vdn =  79303;
-                    break;
-                case 'HD_CE_Operador':
-                    $vdn =  79304;
-                    break;                
-                case 'HD_CE_BackOffice':
-                    $vdn =  79999;
-                    break;
-                case 'HD_CE_Tecnica_Corp':
-                    $vdn =  7289706;
-                    break;
-            }
 
+            $colas = $this->list_vdn();
+            $vdn = $colas[$view['skill']]['vdn'];
             $audio = 'No compatible';
             $day   = Carbon::parse($view['date']);
             $hour  = Carbon::parse($view['hour']);
