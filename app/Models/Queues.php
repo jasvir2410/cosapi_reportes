@@ -10,10 +10,10 @@ class Queue extends Model
     protected $table        = 'queues';
 
     public function estrategia(){
-        return $this->belongsTo('Cosapi\Models\Queues_Strategies');
+        return $this->belongsTo('Cosapi\Models\QueueStrategy','queues_strategy_id');
     }
 
     public function prioridad(){
-        return $this->belongsTo('Cosapi\Models\Queues_Priorities');
+        return $this->belongsTo('Cosapi\Models\QueuePriority','queues_priority_id');
     }
 }

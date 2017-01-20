@@ -75,9 +75,9 @@
             data        :{ _token : $('input[name=_token]').val() },
             success: function(data){
                 for(var posicion = 0;posicion < data.length; posicion++){
-                    var name_checked = data[posicion]['user_id']+'_'+data[posicion]['cola_id']
+                    var name_checked = data[posicion]['user_id']+'_'+data[posicion]['queue_id']
                     $('input[name='+name_checked+']').prop("checked", "checked");
-                    $('input[name='+data[posicion]['user_id']+']').val(data[posicion]['prioridad']);
+                    $('input[name='+data[posicion]['user_id']+']').val(data[posicion]['priority']);
                 }
             },
             error : function(data) {

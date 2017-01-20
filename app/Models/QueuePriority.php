@@ -4,8 +4,8 @@ namespace Cosapi\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Queue_Strategy extends Model
+class QueuePriority extends Model
 {
     protected $connection   = 'laravel';
-    protected $table 		= 'queues_strategies';
+    protected $table        = 'queues_prioritys';
 }

@@ -68,7 +68,7 @@ class SurveysController extends CosapiController
         $cantidad_preguntas = 1;       
         $days                                       = explode(' - ', $fecha_evento);
         $events_id                                  = $this->get_events($events);
-        \DB::select('call sp_estatus_surveys()');
+        \DB::select('call sp_status_surveys()');
         $list_encuesta                              = \DB::select('call sp_data_surveys("'.$days[0].'","'.$days[1].'",'.$events_id.')');
         $resuldato_encuesta                         = \DB::select('call sp_data_result("'.$days[0].'","'.$days[1].'",'.$events_id.')');
         $builderesultado                            = $this->builderesultado($resuldato_encuesta,$cantidad_preguntas);

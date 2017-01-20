@@ -27,7 +27,7 @@ class AgentsQueueController extends CosapiController
             return view('elements/agents_queue/index')->with(array(
                 'Users'           => $Agents_queue['Users'],
                 'Colas'           => $Agents_queue['Colas'],
-                'list_users'           => 'all'
+                'list_users'      => 'all'
             ));
         }
     }
@@ -82,6 +82,8 @@ class AgentsQueueController extends CosapiController
      * @return Array $Agents_queue [Devuelve arrays con información de Usuario y Colas registrados en el sistema]
      */
     protected function query_agents_queue($id_usuario = ''){
+
+
         $Users                  = $this->query_user($id_usuario);
         $Colas                  = Queue::select()
                                         ->with('estrategia','prioridad')
@@ -98,13 +100,15 @@ class AgentsQueueController extends CosapiController
      * el "queues_editore" del Asterisk]
      * @param Request $request [Retorna datos por POST]
      */
-    protected function assign_queue(Request $request){
+    public function assign_queue(Request $request){
         $Agents_queue   = $this->query_agents_queue();
         $queues_editors = [];
         foreach($Agents_queue['Colas'] as $cola){
             foreach($Agents_queue['Users'] as $user){
+                // Arma el name_checked es el name de la etiqueta checkbox el cual se almacena el user_id+'_'+queue_id
                 $name_checked   = $user['id'].'_'.$cola['id'];
                 $name_prioridad = $user['id'];
+
                 if(isset($request->$name_checked)){
                     $queues_editors[$user['id']]['id_user']  = $user['id'];
                     $queues_editors[$user['id']]['cola'][$cola['id']]= $cola['id'].'_'.$request->$name_prioridad;
@@ -115,12 +119,12 @@ class AgentsQueueController extends CosapiController
         if($request->list_users == 'all'){
             //En caso de no realizar un filtro limpiamos lo que hay en la tabla para poder
             //guardar las nuevo estado de asignaciones
-            \DB::table('users_colas')->delete();
+            \DB::table('users_queues')->delete();
         }else{
             $request->list_users = explode('-',$request->list_users);
             //En caso de que haya realizado un filtro eliminamos los datos correpondientes a
             //los usuarios, para registrar sus nuevas asignaciones
-            \DB::table('users_colas')
+            \DB::table('users_queues')
                 ->whereIn('user_id', $request->list_users)
                 ->delete();
         }
@@ -129,10 +133,10 @@ class AgentsQueueController extends CosapiController
             foreach($queues_editor['cola'] as $key => $queue){
                 $assignar_usuario = explode('_',$queue);
                 //Registramos las nuevas asignaciones realizadas
-                \DB::table('users_colas')->insert(array(
+                \DB::table('users_queues')->insert(array(
                     'user_id'       => $queues_editor['id_user'],
-                    'cola_id'       => $assignar_usuario[0],
-                    'prioridad'     => $assignar_usuario[1]
+                    'queue_id'      => $assignar_usuario[0],
+                    'priority'      => $assignar_usuario[1]
                 ));
             }
         }
@@ -171,23 +175,22 @@ class AgentsQueueController extends CosapiController
 
         $file_queue     = 'exports/queues_editor';              // Ruta en donde se va a guardar el archivo generado
         if (file_exists($file_queue)) { unlink($file_queue); }  // Consulta si el archivo existe
-        $file           = fopen($file_queue, "a");              // Crea rl archivo "queues_editor"
+        $file           = fopen($file_queue, "a");              // Crea el archivo "queues_editor"
 
         //Consulta la información registrada en la Base de Datos
         $UsersColas = User_Queue::select()->with('user')->get()->toArray();
+
         $Colas     = $this->list_queue();
-
         foreach($UsersColas as $UserCola ){
-            if(!isset($queue_editors[$UserCola['cola_id']])){
-                $queue_editors[$UserCola['cola_id']]['id']                      = $UserCola['cola_id'];
+            if(!isset($queue_editors[$UserCola['queue_id']])){
+                $queue_editors[$UserCola['queue_id']]['id']                      = $UserCola['queue_id'];
             }
-            $queue_editors[$UserCola['cola_id']]['users'][$UserCola['user_id']] = array(
-                                                                                        'user_id'       => $UserCola['user_id'],
-                                                                                        'user_name'     => $UserCola['user']['username'],
-                                                                                        'prioridad'      => $UserCola['prioridad']
-                                                                                    );
+            $queue_editors[$UserCola['queue_id']]['users'][$UserCola['user_id']] = array(
+                       'user_id'       => $UserCola['user_id'],
+                       'user_name'     => $UserCola['user']['username'],
+                       'priority'      => $UserCola['priority']
+            );
         }
-
         foreach($Colas as $Cola){
             //Creación de cabecera por cada Cola del proyecto
             fwrite($file, '['.$Cola['name'].']'. PHP_EOL);
@@ -205,7 +208,7 @@ class AgentsQueueController extends CosapiController
             if(isset($queue_editors[$Cola['id']])){
                 foreach($queue_editors[$Cola['id']]['users'] as $queue_editor){
                     //Registra miembros de la cola
-                    fwrite($file, 'member => Agent/'.$queue_editor['user_name'].','.$queue_editor['prioridad']. PHP_EOL);
+                    fwrite($file, 'member => Agent/'.$queue_editor['user_name'].','.$queue_editor['priority']. PHP_EOL);
                 }
             }
             //Ingresa un salto entre colas
