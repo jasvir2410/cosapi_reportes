@@ -21,7 +21,7 @@
      @yield('css')
   </head>
 
-  <body class="hold-transition skin-red-light sidebar-mini ">
+  <body class="hold-transition {{getenv('REPORT_THEME')}} sidebar-mini ">
     <!--para que se muestre la pagina en donde estas -->
     <?php
       $crumbs = explode("/",$_SERVER["REQUEST_URI"]);

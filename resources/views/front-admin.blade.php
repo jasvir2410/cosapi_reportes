@@ -1,6 +1,6 @@
 @extends('layout.amdinLTE')
 
-@section('title', 'Empresas')
+@section('title', getenv('PROYECT_NAME_COMPLETE'))
 
 @section('content')
 	<div  id="container"><br>

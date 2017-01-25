@@ -8,7 +8,7 @@ use DB;
 class Cdr extends Model
 {
     protected $connection   = 'laravel';
-    protected $table        = 'cdrs';
+    protected $table        = 'cdr';
 
     public function scopeFiltro_days($query,$days)
     {

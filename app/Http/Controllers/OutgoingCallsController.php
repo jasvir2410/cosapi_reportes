@@ -73,8 +73,7 @@ class OutgoingCallsController extends CosapiController
                                     ->where('disposition','=','ANSWERED')
                                     ->where('lastapp','=','Dial')
                                     ->where(function ($query){
-                                            $query->whereBetween('src',array ('4001','4010'));
-                                                  //->orWhereBetween('src',array ('248','248'));
+                                            $query->whereBetween('src',array (getenv('ANEXO_RANK_INITIAL'),getenv('ANEXO_RANK_END')));
                                         })
                                     ->filtro_days($days)
                                     ->OrderBy('src')

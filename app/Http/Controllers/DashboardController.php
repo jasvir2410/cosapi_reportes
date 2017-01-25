@@ -561,6 +561,10 @@ class DashboardController extends CosapiController
   }
 
 
+  /**
+   * [Función que permite obtener el total de llamadas encoladas.]
+   * @return Array con informacion de llamadas Encoladas
+   */
   protected function showEncoladas(){
     ob_implicit_flush(false);
     $socket     = fsockopen(getenv('ASTERISK_HOST'),"5038", $errornum, $errorstr);
@@ -604,7 +608,7 @@ class DashboardController extends CosapiController
     foreach( $chans as $chan => $curr )
     { 
       // El valor del Context cambia según el proyecto en el cual se instale el software
-      if($curr['Context']=="context-claroempresas")
+      if($curr['Context']==getenv('CONTEXT_NAME'))
       {
         if ($curr['Link'] == '') {
           $encoladas[$a]['Contexto']     = $curr['Context'];

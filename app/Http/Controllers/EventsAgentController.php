@@ -178,8 +178,13 @@ class EventsAgentController extends CosapiController
                             ->get()
                             ->toArray();
         return $events_presents;
-    } 
+    }
 
+    /**
+     * [Función que permite obtener datos de eventos pasados que han sido realizados por el usuario]
+     * @param $days [Rango de días a consultar]
+     * @return mixed [Array con informacion obtenida de los eventos]
+     */
     protected function events_history($days){
         $events_history  = DetalleEventosHistory::Select('user_id','evento_id','fecha_evento','observaciones')
                             ->with('evento','user')
