@@ -52,6 +52,7 @@
               <ul class="treeview-menu">
                 <li><a href="#" id="agents_queue"       class="reportes"><i class="fa fa-circle-o text-purple"></i> Assign Queue</a></li>
                 <li><a href="#" id="list_users"       class="reportes"><i class="fa fa-circle-o text-yellow"></i> List Users</a></li>
+                <li><a href="#" id="list_queue"       class="reportes"><i class="fa fa-circle-o text-yellow"></i> List Queue</a></li>
               </ul>
             </li>
           </ul>
