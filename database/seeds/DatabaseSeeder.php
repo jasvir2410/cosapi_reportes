@@ -15,6 +15,18 @@ class DatabaseSeeder extends Seeder
         Model::unguard();
 
         // $this->call(UserTableSeeder::class);
+        $this->call(EstadosTableSeeder::class);
+        $this->call(EstadosVisiblesTableSeeder::class);
+        $this->call(EstadosCallsTableSeeder::class);
+        $this->call(EventosTableSeeder::class);
+        $this->call(AnexosTableSeeder::class);
+        $this->call(AgentesTableSeeder::class);
+        $this->call(Queues_prioritysTableSeeder::class);
+        $this->call(Queues_strategysTableSeeder::class);
+        $this->call(QueuesTableSeeder::class);
+        $this->call(UsersTableSeeder::class);
+        $this->call(Tipo_EncuestasTableSeeder::class);
+
 
         Model::reguard();
     }
