@@ -15,7 +15,7 @@ class CreateAgentesTable extends Migration
         Schema::create('agentes', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name',5)->unique();
-            $table->integer('estado_id')->unsigned()->index('agentes_estado_id_foreign');
+            $table->integer('estado_id')->unsigned();
             $table->timestamps();
             /*se crea las relaciones entre tablas y llaves foraneas*/
             $table->foreign('estado_id')

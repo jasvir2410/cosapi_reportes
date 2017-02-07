@@ -14,8 +14,8 @@ class CreateDetalleEventosTable extends Migration
     {
         Schema::create ('detalle_eventos', function (Blueprint $table){
             $table->increments('id');
-            $table->integer('evento_id')->unsigned()->index('detalle_eventos_evento_id_foreign');
-            $table->integer('user_id')->unsigned()->index('detalle_eventos_user_id_foreign');
+            $table->integer('evento_id')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->dateTime('fecha_evento');
             $table->string('ip_cliente',20);
             $table->string('observaciones',80);
