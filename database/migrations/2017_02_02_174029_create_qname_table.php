@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCacheTable extends Migration
+class CreateQnameTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +12,10 @@ class CreateCacheTable extends Migration
      */
     public function up()
     {
-        Schema::create('cache', function (Blueprint $table) {
-            $table->string('key')->unique();
-            $table->text('value');
-            $table->integer('expiration');
+        Schema::create('qname', function(Blueprint $table)
+        {
+            $table->integer('queue_id', true);
+            $table->string('queue', 40)->default('')->unique();
         });
     }
 
@@ -26,6 +26,6 @@ class CreateCacheTable extends Migration
      */
     public function down()
     {
-        Schema::drop('cache');
+        Schema::drop('qname');
     }
 }

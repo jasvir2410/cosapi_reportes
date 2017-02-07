@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMoviesTable extends Migration
+class CreateQagentTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,10 @@ class CreateMoviesTable extends Migration
      */
     public function up()
     {
-        Schema::create('movies', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->string('description');
-            $table->timestamps();
+        Schema::create('qagent', function(Blueprint $table)
+        {
+            $table->integer('agent_id', true);
+            $table->string('agent', 40)->default('')->unique();
         });
     }
 
@@ -27,6 +26,6 @@ class CreateMoviesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('movies');
+        Schema::drop('qagent');
     }
 }
