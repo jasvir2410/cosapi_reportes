@@ -106,7 +106,7 @@ class CosapiController extends Controller
 
     /**
      * [desconexion_ami Función para desconectar sesión del AMI]
-     * 
+     *
      */
     protected function desconexion_ami()
     {
@@ -231,5 +231,27 @@ class CosapiController extends Controller
             $list_prioridad[$Cola['id']]['vdn']        = $Cola['vdn'];
         }
         return $list_prioridad;
+    }
+
+    /**
+     * [Función para sincronizar archivo queue_editor al servidor asterisk]
+     * @return array [valor con el resultado de la ejecuacion, devuelve cero si es correcto]
+     */
+    protected function rsync_queue_editor(){
+
+        exec('rsync -avz --delete '.getenv('EXPORTS_ROUTE').'queues_editor '.getenv('ASTERISK_HOST').'::archivos_asterisk',$output,$return_var);
+
+        return $return_var;
+    }
+
+
+    /**
+     * [Función para actualizar configuracion de servidor asterisk]
+     */
+    protected function queueReload(){
+       if ($this->conexion_ami()==true){
+            $prueba=phpAMI::command('reload');
+            $this->desconexion_ami();
+        }
     }
 }
