@@ -166,7 +166,7 @@ class IncomingCallsController extends CosapiController
             $day   = Carbon::parse($view['date']);
             $hour  = Carbon::parse($view['hour']);
 
-            $url             = 'http://grabaciones.cosapidata.pe/empresas/'.$view['skill'].'/'.$day->format('Y/m/d').'/';
+            $url             = 'http://grabaciones.cosapidata.pe/'.getenv('AUDIO_PROYECT').'/'.$view['skill'].'/'.$day->format('Y/m/d').'/';
             $audio_name      = $view['telephone'].'-'.$vdn.'-'.$day->format('dmY').'-'.$hour->format('His').'.gsm';
             $route_complete  = $url.$audio_name;
             $bronswer        = detect_bronswer();
