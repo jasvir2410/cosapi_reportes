@@ -9,6 +9,7 @@
 /public/vendor/
 /public/exports/
 /public/cosapi/script_php/
+/public/cosapi/script_php
 /node_modules
 
 # -- Composer
