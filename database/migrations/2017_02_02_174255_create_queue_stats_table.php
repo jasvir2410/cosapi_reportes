@@ -13,8 +13,8 @@ class CreateQueueStatsTable extends Migration
     public function up()
     {
         Schema::create('queue_stats', function (Blueprint $table){
-            $table->primary(['queue_stats_id', 'uniqueid']);
-            $table->integer('queue_stats_id')->unsigned();
+
+            $table->increments('queue_stats_id');
             $table->string('uniqueid',40)->index('ixuni');
             $table->dateTime('DATETIME')->default('0000-00-00 00:00:00')->index('ixdate');
             $table->integer('qname')->unsigned();
@@ -25,6 +25,7 @@ class CreateQueueStatsTable extends Migration
             $table->string('info3', 40)->nullable();
             $table->string('info4', 40)->nullable();
             $table->string('info5', 40)->nullable();
+            $table->unique(['uniqueid','DATETIME']);
             $table->unique(['uniqueid','DATETIME','qname','qagent','qevent'], 'unico');
 
         });
